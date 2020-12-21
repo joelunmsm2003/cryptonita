@@ -1,0 +1,33 @@
+from django.urls import path, include
+from rest_framework import routers
+from django.contrib import admin
+from .api import *
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
+
+router = routers.DefaultRouter()
+#router.register('api/v1/movie', MovieViewSet, 'movie')
+#router.register('api/v1/medidas', MedidasViewSet, 'medidas')
+router.register('api/v1/subcategorias', SubcategoriaViewSet, 'subcategorias')
+router.register('api/v1/categorias', CategoriaViewSet, 'categorias')
+router.register('api/v1/favoritos', FavoritosViewSet, 'favoritos')
+router.register('api/v1/cercademi', CercademiViewSet, 'cercademi')
+router.register('api/v1/promociones', PromocionViewSet, 'promociones')
+router.register('api/v1/cryptos', CriptomonedasViewSet, 'cryptos')
+router.register('api/v1/inversiones', InversionViewSet, 'inversiones')
+
+
+admin.site.site_header = 'Prediptivo System'
+
+
+
+urlpatterns = [
+	path('', include(router.urls)),
+	path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+	path(r'^health_check/', include('health_check.urls')),
+	path(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+	path(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
+]

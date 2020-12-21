@@ -1,0 +1,29 @@
+version: '2'
+volumes:
+ dbdata:
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: crypto_database_container
+    volumes:
+    - dbdata:/var/lib/mysql
+    restart: always
+    environment:
+    - MYSQL_ROOT_PASSWORD=secret
+    - MYSQL_DATABASE=crypto
+    - MYSQL_USER=root
+    - MYSQL_PASSWORD=secret
+    ports:
+    - "3370:3306"
+    #command: ["/etc/init.d/mysql status"]
+  web:
+    build: .
+    container_name: crypto_django_container
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "5500:8000"
+    depends_on:
+      - mysql
