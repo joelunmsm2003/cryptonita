@@ -11,6 +11,11 @@ class CriptomonedasViewSet(viewsets.ModelViewSet):
     serializer_class = CriptomonedasSerializer
     permission_classes = [AllowAny]
 
+class HistorialViewSet(viewsets.ModelViewSet):
+    queryset = Historial.objects.all()
+    serializer_class = HistorialSerializer
+    permission_classes = [AllowAny]
+
 
 class InversionViewSet(viewsets.ModelViewSet):
     queryset = Inversion.objects.all()

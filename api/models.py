@@ -79,11 +79,16 @@ class MyUser(AbstractBaseUser):
 
 
 
+
+
 class Criptomonedas(models.Model):
     precio = models.FloatField(blank=False, max_length=100, null=True)
     simbolo =models.CharField(blank=False, max_length=100, null=True)
+    icono=models.CharField(blank=False, max_length=100, null=True)
+    sigla =models.CharField(blank=False, max_length=100, null=True)
     nombre =models.CharField(blank=False, max_length=100, null=True)
     tendencia = models.CharField(blank=False, max_length=100, null=True)
+    activo = models.CharField(blank=True, max_length=100, null=True)
     fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
 
@@ -91,7 +96,7 @@ class Criptomonedas(models.Model):
         verbose_name_plural = 'Criptomonedas'
 
     def __str__(self):
-       return self.simbolo
+       return self.simbolo.upper()+' - '+str(self.precio)
 
 compra_venta = (
         ('C', 'Compra'),
@@ -114,6 +119,8 @@ class Inversion(models.Model):
        return str(self.criptomoneda)
 
 
+
+
     @property
     def ganancia(self):
 
@@ -129,38 +136,68 @@ class Inversion(models.Model):
 
         '''
 
-        precio=(self.criptomoneda.precio-self.precio_usd)/self.precio_usd
+        if self.criptomoneda:
 
-        ganancia= precio*self.comprada_usd
-        
-        return ganancia
+            precio=(self.criptomoneda.precio-self.precio_usd)/self.precio_usd
+
+            ganancia= precio*self.comprada_usd
+
+            return ganancia
+
+        else:
+
+            return 0
+
+
+
 
     @property
     def porcentaje_ganancia(self):
 
-        
-        precio=(self.criptomoneda.precio-self.precio_usd)/self.precio_usd
+        if self.criptomoneda:
 
-        ganancia= precio*100
-        
-        return ganancia
+            precio=(self.criptomoneda.precio-self.precio_usd)/self.precio_usd
+
+            ganancia= precio*100
+            
+            return ganancia
+
+        else:
+
+            return 0
 
 
 
 class Historial(models.Model):
     criptomoneda = models.ForeignKey(Criptomonedas, blank=True, null=True, on_delete=models.CASCADE)
-    open_price = models.FloatField(blank=False, max_length=100, null=True)
-    close_price = models.FloatField(blank=False, max_length=100, null=True)
-    high_price = models.FloatField(blank=False, max_length=100, null=True)
-    low_price = models.FloatField(blank=False, max_length=100, null=True)
+    open_price = models.FloatField(blank=True, max_length=100, null=True)
+    close_price = models.FloatField(blank=True, max_length=100, null=True)
+    high_price = models.FloatField(blank=True, max_length=100, null=True)
+    low_price = models.FloatField(blank=True, max_length=100, null=True)
+    price = models.FloatField(blank=True, max_length=100, null=True)
+    fecha = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = 'Historial'
 
     def __str__(self):
-       return self.criptomoneda
+       return str(self.price)
 
+
+
+class HistorialUser(models.Model):
+    criptomoneda = models.ForeignKey(Criptomonedas, blank=True, null=True, on_delete=models.CASCADE)
+    ganancia = models.FloatField(blank=True, max_length=100, null=True)
+    price = models.FloatField(blank=True, max_length=100, null=True)
+    fecha = models.DateTimeField(blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = 'HistorialUser'
+
+    def __str__(self):
+       return str(self.price)
 
 
 

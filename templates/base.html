@@ -1,0 +1,56 @@
+{% load static %}
+<html>
+    <head>
+        <title>Prediptivo Investments</title>
+        <link href="https://fonts.googleapis.com/css2?family=Play&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300&display=swap" rel="stylesheet">
+
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+        
+
+    </head>
+    <body>
+        <div class="page-header">
+             <nav class="nav-extended grey darken-3">
+                <div class="nav-wrapper">
+                  <a href="#" class="brand-logo">
+
+                    <img src="https://images.vexels.com/media/users/3/138647/isolated/preview/19bad593ff295a81e61c4a2a1a14cc06-geometr-iacute-a-sagrada-3d-by-vexels.png">
+
+                    <span>prediptivo</span>
+
+                    </a>
+
+
+                  <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                  <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href='/monedas/bitcoin'>Historial</a></li>
+                    <li><a href='/monitor'>Ganancias</a></li>
+                    <li><a href='/admin/api/inversion/'>Inversiones</a></li>
+                    <li><a href="/ingresar">Ingresar</a></li>
+                    <li><a href="/registrarse">Registrarse</a></li>
+                  </ul>
+                </div>
+                
+              </nav>
+        </div>
+
+        <div class="container">
+            
+               
+                {% block content %}
+                {% endblock %}
+              
+            
+        </div>
+    </body>
+</html>

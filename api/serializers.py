@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.api import *
+from .models import *
 import logging
 from rest_framework.decorators import authentication_classes, permission_classes
 
@@ -7,6 +7,18 @@ from rest_framework.decorators import authentication_classes, permission_classes
 class CriptomonedasSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Criptomonedas 
+		fields = "__all__"
+
+@permission_classes([])
+class HistorialSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Historial 
+		fields = "__all__"
+
+@permission_classes([])
+class HistorialUserSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = HistorialUser 
 		fields = "__all__"
 
 class InversionsSerializer(serializers.ModelSerializer):

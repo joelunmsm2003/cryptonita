@@ -19,5 +19,10 @@ urlpatterns = [
     url(r'^health_check/', include('health_check.urls')),
     url(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     url(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
+    url(r'^email/', email),
+    url(r'^monedas/(\w+)', monedas),
+    url(r'^cryptos', cryptos),
+    url(r'^monitor', monitor),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -47,15 +47,41 @@ admin.site.unregister(Group)
 
 @admin.register(Criptomonedas)
 class CriptomonedasAdmin(admin.ModelAdmin):
-    list_display = ('id','nombre','simbolo','precio')
+    list_display = ('id','nombre','simbolo','precio','sigla','activo')
+    list_filter = ('precio',)
+    search_fields=('nombre','sigla')
+    list_editable = ('activo',)
+
+
+
+@admin.register(Historial)
+class HistorialAdmin(admin.ModelAdmin):
+    list_display = ('id','price','criptomoneda','fecha',)
+    list_filter = ('criptomoneda',)
+
+
+@admin.register(HistorialUser)
+class HistorialUserAdmin(admin.ModelAdmin):
+    list_display = ('id','price','criptomoneda','fecha','ganancia')
+    list_filter = ('criptomoneda',)
 
 
 
 @admin.register(Inversion)
 class InversionsAdmin(admin.ModelAdmin):
-    list_display = ('id','criptomoneda','precio_usd','cantidad_comprada','ganancia','porcentaje_ganancia','transaccion')
+    list_display = ('id','criptomoneda','_comprada_usd','precio_usd','cantidad_comprada','_ganancia','_porcentaje_ganancia','transaccion','fecha')
     list_filter = ('criptomoneda','transaccion')
+
     actions = ['actualizar']
+
+    def _comprada_usd(self, obj):
+        return obj.comprada_usd
+
+    def _ganancia(self, obj):
+        return round(obj.ganancia,2)
+
+    def _porcentaje_ganancia(self, obj):
+        return round(obj.porcentaje_ganancia,2)
 
 
     def actualizar(self, request,queryset):

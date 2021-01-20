@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+                    {% for c in allcryptos %}
+                    <a href='/monedas/{{c.nombre}}'>{{c.nombre}}</a>
+                    {% endfor %}
+               
+ 
+
+    <h5> <img src="{{crypto.icono}}">{{title}} USD {{crypto.precio}}</h5>
+    <div>
+    <div id="ganancias" style='height: 300px;' ></div>
+    <div id="porcentaje" style='height: 300px;' ></div>
+    </div>
+  
+    <style type="text/css">
+        
+        .modebar {
+        display: none !important;
+        }
+
+    </style>
+
+    <script>
+
+         
+        var ganancia_total='{{ganancia_total}}'
+
+        console.log('ganancia_total',ganancia_total)
+
+        var data='{{ganancia}}'
+        console.log('ganancia',data)
+        data = JSON.parse(data)
+        data_x=data.map(d=>d[0])
+        data_y=data.map(d=>d[1])
+        data_y_comprada=data.map(d=>d[2])
+
+        var data = [
+          {
+            x: data_x,
+            y: data_y,
+            type: 'bar',
+             marker: {
+              color: '#424242'
+            }
+          }
+        ];
+
+        var layout = {
+            title: 'Ganancia USD '+ganancia_total,
+            showlegend: false,
+            font: {
+            family: 'Play',
+            size: 15,
+            color: '#424242'}
+        };
+
+
+        Plotly.newPlot('ganancias', data,layout);
+
+
+        var data='{{ganancia}}'
+        console.log('ganancia',data)
+        data = JSON.parse(data)
+        data_x=data.map(d=>d[0])
+        data_y=data.map(d=>d[1])
+        data_y_comprada=data.map(d=>d[2])
+
+        var data = [
+
+          {
+            x: data_x,
+            y: data_y_comprada,
+            type: 'bar',
+             marker: {
+              color: '#36c16f'
+            },
+          }
+        ];
+
+        var layout = {
+            title: 'Porcentaje Ganancia %',
+            showlegend: false,
+            font: {
+            family: 'Play',
+            size: 15,
+            color: '#424242'}
+        };
+
+
+        Plotly.newPlot('porcentaje', data,layout);
+
+
+
+
+
+</script>
+
+
+{% endblock %}
+
+
+
+<!--<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+
+{% for c in allcryptos %}
+    <a href='/monedas/{{c.nombre}}'>{{c.nombre}}</a>
+{% endfor %}
+
+<figure class="highcharts-figure">
+    <div id="container"></div>
+    <p class="highcharts-description">
+       {{texto}}
+    </p>
+</figure>
+
+
+<script type="text/javascript">
+
+
+	var data='{{data}}'
+	data = JSON.parse(data)
+
+	console.log(data)
+
+        Highcharts.chart('container', {
+            chart: {
+                zoomType: 'y'
+            },
+            title: {
+                text: '{{title}} {{crypto.simbolo}}'
+            },
+            subtitle: {
+                text: '{{crypto.precio}}  USD '
+            },
+            xAxis: {
+                type: 'datetime'
+            },
+            yAxis: {
+                title: {
+                    text: 'Exchange rate'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: {
+                            x1: 0,
+                            y1: 0,
+                            x2: 0,
+                            y2: 1
+                        },
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            [8, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                        ]
+                    },
+                    marker: {
+                        radius: 2
+                    },
+                    lineWidth: 1,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                }
+            },
+
+            series: [{
+                type: 'spline',
+                name: '{{crypto.simbolo}} to USD ',
+                data: data
+            }]
+        });
+  
+
+</script>-->
+
+
+

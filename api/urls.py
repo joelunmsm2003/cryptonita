@@ -18,7 +18,7 @@ router.register('api/v1/cercademi', CercademiViewSet, 'cercademi')
 router.register('api/v1/promociones', PromocionViewSet, 'promociones')
 router.register('api/v1/cryptos', CriptomonedasViewSet, 'cryptos')
 router.register('api/v1/inversiones', InversionViewSet, 'inversiones')
-
+router.register('api/v1/historial', HistorialViewSet, 'historial')
 
 admin.site.site_header = 'Prediptivo System'
 
@@ -30,4 +30,5 @@ urlpatterns = [
 	path(r'^health_check/', include('health_check.urls')),
 	path(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
 	path(r'^api/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
+
 ]

@@ -1,0 +1,26 @@
+<nav class="nav-extended grey darken-3">
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo">
+
+        <img src="https://images.vexels.com/media/users/3/138647/isolated/preview/19bad593ff295a81e61c4a2a1a14cc06-geometr-iacute-a-sagrada-3d-by-vexels.png">
+
+        <span>prediptivo</span>
+
+        </a>
+
+
+      <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href='/admin/api/inversion/'>Inversiones</a></li>
+        <li><a href="/ingresar">Ingresar</a></li>
+        <li><a href="/registrarse">Registrarse</a></li>
+      </ul>
+    </div>
+    <div class="nav-content">
+        <ul class="tabs tabs-transparent">
+        {% for c in allcryptos %}
+        <li class="tab"><a href='/monedas/{{c.nombre}}'>{{c.nombre}}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+</nav>
