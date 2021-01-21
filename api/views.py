@@ -133,7 +133,7 @@ def monedas(request,name):
 
 		_historial=Historial.objects.filter(criptomoneda__nombre=name)
 
-		_inversion=Inversion.objects.filter(criptomoneda__nombre=name)
+		_inversion=Inversion.objects.filter(criptomoneda__nombre=name).order_by('-id')[:42]
 
 		crypto=Criptomonedas.objects.get(nombre=name)
 
@@ -195,7 +195,7 @@ def monitor(request):
 	if request.method == 'GET':
 
 
-		_historial=HistorialUser.objects.all()
+		_historial=HistorialUser.objects.all().order_by('-id')[:2000]
 
 		_criptos=Criptomonedas.objects.filter(activo=True)
 
