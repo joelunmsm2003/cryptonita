@@ -2,13 +2,17 @@
 
 {% block content %}
 
+            <div>
                     {% for c in allcryptos %}
                     <a href='/monedas/{{c.nombre}}'>{{c.nombre}}</a>
                     {% endfor %}
                
- 
+            </div>
 
-    <h5> <img src="{{crypto.icono}}">{{title}} USD {{crypto.precio}}</h5>
+     <img src="{{crypto.icono}}">
+     <h4><strong style='color:#19222d;'>{{title | capfirst}}</strong> $ {{crypto.precio}} </h4>
+    <h5><strong style='color:#19222d;'>Balance</strong> $ {{balance}}</h5>
+    <h5><strong tyle='color:#19222d;'>Cantidad</strong>  {{cantidad_comprada}}</h5>
     <div>
     <div id="ganancias" style='height: 300px;' ></div>
     <div id="porcentaje" style='height: 300px;' ></div>
@@ -27,19 +31,28 @@
          
         var ganancia_total='{{ganancia_total}}'
 
+        var cantidad_comprada='{{cantidad_comprada}}'
+
         console.log('ganancia_total',ganancia_total)
 
         var data='{{ganancia}}'
         console.log('ganancia',data)
         data = JSON.parse(data)
         data_x=data.map(d=>d[0])
+
+        //data_x=data.map(d=>new Date(d[4]))
+
+        console.log('data_x',data_x)
+
         data_y=data.map(d=>d[1])
         data_y_comprada=data.map(d=>d[2])
+
 
         var data = [
           {
             x: data_x,
             y: data_y,
+  
             type: 'bar',
              marker: {
               color: '#424242'
@@ -48,7 +61,20 @@
         ];
 
         var layout = {
-            title: 'Ganancia USD '+ganancia_total,
+            title: 'Ganancia USD '+ganancia_total ,
+            annotations: [{
+                text: ":)" ,
+                  font: {
+                  size: 15,
+                  color: 'rgb(116, 101, 130)',
+                },
+                showarrow: false,
+                align: 'center',
+                x: 0.5,
+                y: 1,
+                xref: 'paper',
+                yref: 'paper',
+              }],
             showlegend: false,
             font: {
             family: 'Play',

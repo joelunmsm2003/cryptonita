@@ -63,8 +63,6 @@ def cryptos(request):
 
 	for s in suport:
 
-
-
 		if Criptomonedas.objects.filter(simbolo=s).count()==0:
 
 			Criptomonedas.objects.filter(simbolo=s).update(activo=False)
@@ -133,13 +131,9 @@ def monedas(request,name):
 
 		_historial=Historial.objects.filter(criptomoneda__nombre=name)
 
-		_inversion=Inversion.objects.filter(criptomoneda__nombre=name).order_by('-id')[:42]
+		_inversion=Inversion.objects.filter(criptomoneda__nombre=name,eliminado=False).order_by('-id')
 
 		crypto=Criptomonedas.objects.get(nombre=name)
-
-		for inv in _inversion:
-
-			print('inv',inv)
 
 		allcryptos=Criptomonedas.objects.filter(activo=True)
 
@@ -151,6 +145,8 @@ def monedas(request,name):
 
 		ganancia_inversion=0
 		ganancia_total=0
+		cantidad_comprada=0
+		balance=0
 
 		# take second element for sort
 		
@@ -163,6 +159,8 @@ def monedas(request,name):
 				signo=1
 			else:
 				signo=-1
+
+			cantidad_comprada=cantidad_comprada+i.cantidad_comprada*signo
 
 			ganancia_total=ganancia_total+i.ganancia*signo
 			elem_gan.insert(2,i.ganancia*signo)
@@ -186,7 +184,7 @@ def monedas(request,name):
 
 		
 		
-		return render(request, 'monedas.html', {'title': name,'data':data,'crypto':crypto,'allcryptos':allcryptos,'inversion':data_inv,'ganancia':data_gan,'ganancia_total':round(ganancia_total,2)})
+		return render(request, 'monedas.html', {'balance':cantidad_comprada*crypto.precio,'title': name,'data':data,'crypto':crypto,'allcryptos':allcryptos,'inversion':data_inv,'cantidad_comprada':round(cantidad_comprada,5),'ganancia':data_gan,'ganancia_total':round(ganancia_total,2)})
 
 
 @csrf_exempt
@@ -195,12 +193,11 @@ def monitor(request):
 	if request.method == 'GET':
 
 
-		_historial=HistorialUser.objects.all().order_by('-id')[:2000]
+		_historial=HistorialUser.objects.all().order_by('-id')[:5000]
 
 		_criptos=Criptomonedas.objects.filter(activo=True)
 
 		serializer_cryptos = CriptomonedasSerializer(_criptos, many=True)
-
 
 
 		serializer_historial = HistorialUserSerializer(_historial, many=True)

@@ -69,8 +69,9 @@ class HistorialUserAdmin(admin.ModelAdmin):
 
 @admin.register(Inversion)
 class InversionsAdmin(admin.ModelAdmin):
-    list_display = ('id','criptomoneda','_comprada_usd','precio_usd','cantidad_comprada','_ganancia','_porcentaje_ganancia','transaccion','fecha')
+    list_display = ('id','criptomoneda','eliminado','comprada_usd','precio_usd','cantidad_comprada','_ganancia','_porcentaje_ganancia','transaccion','fecha')
     list_filter = ('criptomoneda','transaccion')
+    list_editable = ('eliminado',)
 
     actions = ['actualizar']
 

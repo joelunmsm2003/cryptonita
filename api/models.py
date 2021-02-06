@@ -111,6 +111,7 @@ class Inversion(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
     criptomoneda = models.ForeignKey(Criptomonedas, blank=True, null=True, on_delete=models.CASCADE)
     transaccion = models.CharField(blank=True,max_length=1, choices=compra_venta,null=True)
+    eliminado = models.BooleanField(default=False)
     
     class Meta:
         verbose_name_plural = 'Inversiones'
