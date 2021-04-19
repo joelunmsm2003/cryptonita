@@ -2,47 +2,132 @@
 
 {% block content %}
 
-            <div>
-                    {% for c in allcryptos %}
-                    <a href='/monedas/{{c.nombre}}'>{{c.nombre}}</a>
-                    {% endfor %}
-               
-            </div>
+<div class='container'>
 
-     <img src="{{crypto.icono}}">
-     <h4><strong style='color:#19222d;'>{{title | capfirst}}</strong> $ {{crypto.precio}} </h4>
-    <h5><strong style='color:#19222d;'>Balance</strong> $ {{balance}}</h5>
-    <h5><strong tyle='color:#19222d;'>Cantidad</strong>  {{cantidad_comprada}}</h5>
+    <div style="height: 20px;"></div>
+   
+  <select class="browser-default" id='mySelect' onchange="myFunction()" style="width: 200px;">
+
+    <option>Criptomoneda</option>
+    {% for c in allcryptos %}
+                    <option value="{{c.nombre}}">{{c.nombre}} {{c.precio}}</option>
+                    {% endfor %}
+  </select>
+
+ <div style="height: 20px;"></div>
+
+
+    <div style='display: grid;grid-template-columns: 30% 70%;'>
+
+        <div>    
+             <img src="{{crypto.icono}}">
+             <h5><div class='subtitulo'><strong style='color:#dee4ea;'>{{title | capfirst |truncatechars:9}}</strong> <span>{{crypto.precio}}</span> </div></h5>
+
+             <h5><div class='subtitulo'><strong >Cantidad</strong>  <span>{{cantidad_comprada}}</span></div></h5>
+
+ <div style="height: 20px;"></div>
+
+            <h6><div class='subtitulo'><strong style='color:#3ce24a;'>Balance</strong> <span>{{balance}}</span></div></h6>
+            
+
+            <div class='subtitulo2'><strong style='color:#3ce24a;'>Compra </strong>  <span>{{comprada_usd}}</span></div>
+
+            <div class='subtitulo2'><strong style='color:#3ce24a;'>Venta </strong>  <span>{{vendida_usd}}</span></div>
+            <div class='subtitulo2'><strong style='color:#3ce24a;'>Inversión</strong> <span>{{inversion_usd}}</span></div>
+
+            <div class='subtitulo2'><strong style='color:#3ce24a;'>Ganancia</strong> <span>{{ganancia_retorno}}</span></div>
+            
+         
+            <br>
+            
+            H {% if ultimo_hora > 0 %} <span style='color:#3ce24a;'>{{ultimo_hora}}%</span> {% endif %} 
+            {% if ultimo_hora < 0 %} <span style='color:#fd5b0b;'>{{ultimo_hora}}%</span>  {% endif %} 
+            
+             4H {% if ultimo_4hora > 0 %} <span style='color:#3ce24a;'>{{ultimo_4hora}}%</span> {% endif %} 
+            {% if ultimo_4hora < 0 %} <span style='color:#fd5b0b;'>{{ultimo_4hora}}%</span>  {% endif %} 
+            
+
+             D {% if ultimodia > 0 %} <span style='color:#3ce24a;'>{{ultimodia}}%</span> {% endif %} 
+            {% if ultimodia < 0 %} <span style='color:#fd5b0b;'>{{ultimodia}}%</span>  {% endif %} 
+            
+          </div>
+
+        <div>
+            <div id='historial'></div>
+
+        </div>
+
+        </div>
+    
     <div>
-    <div id="ganancias" style='height: 300px;' ></div>
-    <div id="porcentaje" style='height: 300px;' ></div>
+       
+
+    <div id="ganancias" style='height: 400px;' ></div>
+    <div id="porcentaje" style='height: 400px;' ></div>
     </div>
+
+
+
+
   
     <style type="text/css">
         
         .modebar {
         display: none !important;
+
+        }
+
+        body{
+            background:#252323;
+            color:#dee4ea;
+            font-family: 'Play'
+        }
+        .subtitulo{
+            display: grid;
+            grid-template-columns: 50% 50%;
+           
+        }
+
+         .subtitulo2{
+            display: grid;
+            grid-template-columns: 50% 50%;
+            padding-top:9px;
+           
+        }
+
+        @media only screen and (max-width: 768px) {
+          /* For mobile phones: */
+            .subtitulo{
+                display: grid;
+                grid-template-columns: 40% 60%;
+            }
         }
 
     </style>
 
     <script>
 
+
+        function myFunction() {
+          var x = document.getElementById("mySelect").value;
+
+          window.location.href = "http://app01.comunica7.com:5500/monedas/"+x;
+          
+        }
          
         var ganancia_total='{{ganancia_total}}'
 
         var cantidad_comprada='{{cantidad_comprada}}'
 
-        console.log('ganancia_total',ganancia_total)
-
+    
         var data='{{ganancia}}'
-        console.log('ganancia',data)
+    
         data = JSON.parse(data)
         data_x=data.map(d=>d[0])
 
         //data_x=data.map(d=>new Date(d[4]))
 
-        console.log('data_x',data_x)
+    
 
         data_y=data.map(d=>d[1])
         data_y_comprada=data.map(d=>d[2])
@@ -52,18 +137,19 @@
           {
             x: data_x,
             y: data_y,
-  
             type: 'bar',
              marker: {
-              color: '#424242'
+              color: '#3ce24a'
             }
           }
         ];
 
         var layout = {
-            title: 'Ganancia USD '+ganancia_total ,
+            title: 'Ganancia',
+            plot_bgcolor:"#252323",
+            paper_bgcolor:"#252323",
             annotations: [{
-                text: ":)" ,
+                text: "" ,
                   font: {
                   size: 15,
                   color: 'rgb(116, 101, 130)',
@@ -78,8 +164,8 @@
             showlegend: false,
             font: {
             family: 'Play',
-            size: 15,
-            color: '#424242'}
+            size: 13,
+            color: '#fff'}
         };
 
 
@@ -87,7 +173,7 @@
 
 
         var data='{{ganancia}}'
-        console.log('ganancia',data)
+
         data = JSON.parse(data)
         data_x=data.map(d=>d[0])
         data_y=data.map(d=>d[1])
@@ -100,7 +186,7 @@
             y: data_y_comprada,
             type: 'bar',
              marker: {
-              color: '#36c16f'
+              color: '#3ce24a'
             },
           }
         ];
@@ -108,14 +194,82 @@
         var layout = {
             title: 'Porcentaje Ganancia %',
             showlegend: false,
+               plot_bgcolor:"#252323",
+            paper_bgcolor:"#252323",
             font: {
             family: 'Play',
-            size: 15,
-            color: '#424242'}
+            size: 14,
+            color: '#fff'}
         };
 
 
         Plotly.newPlot('porcentaje', data,layout);
+
+
+        /////////
+
+
+
+        var historial='{{historial|safe}}'
+        
+        historial = JSON.parse(historial)
+
+        console.log(historial)
+
+
+
+            data = historial
+
+            data_x=data.map(d=>new Date(d['fecha']))
+            
+            data_y=data.map(d=>d['price'])
+
+        
+            var data = {
+                x: data_x,
+                y: data_y,
+                type: 'lines',
+                 marker: {
+              color: '#3ce24a'
+            },
+                
+                name: 'oo'
+              }
+            
+
+
+            var layout = {
+                title: '',
+                plot_bgcolor:"#252323",
+                paper_bgcolor:"#252323",
+                xaxis: {
+    
+                    showgrid: false, 
+                    zeroline: false, 
+                    visible: false
+                 },
+                showlegend: false,
+                font: {
+                family: 'Play',
+                size: 15,
+                margin: {
+                    autoexpand: true,
+                    l: 0,
+                    r: 20,
+                    t: 100
+                  },
+                
+                color: '#fff'}
+            };
+
+
+            Plotly.newPlot('historial',[data] ,layout);
+
+  
+
+
+
+
 
 
 
@@ -123,6 +277,7 @@
 
 </script>
 
+</div>
 
 {% endblock %}
 

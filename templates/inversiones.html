@@ -8,12 +8,23 @@
         .modebar {
         display: none !important;
         }
-        
+
+         body{
+            background:#252323;
+            color:#dee4ea;
+        }
+
+
+
 </style>
-   
-   	<div id='bitcoin' style='height: 350px;'></div>
-	<div id='ethereum' style='height: 350px;'></div>
-    <div id='altcoins'></div>
+   	
+   	<div style="display: grid;grid-template-columns: 50% 50%;">
+
+    {% for c in allcryptos %}
+                    <div id='{{c.nombre}}' style="height: 300px;"></div>
+    {% endfor %}
+    
+    </div>  
 
     <script type="text/javascript" src='/static/js/inversiones.js'></script>
 
@@ -28,15 +39,11 @@
 	    historial = JSON.parse(historial)
 
 
-	    graficas=[]
+	
 
-	    altcoins=cryptos.filter(d=>d.nombre!='bitcoin'  )
+	    cryptos.forEach(function(word) {
 
-	    altcoins=altcoins.filter(d=>d.nombre!='ethereum')
-
-
-
-	    altcoins.forEach(function(word) {
+	    	    graficas=[]
 
 		  console.log('word',word);
 
@@ -56,6 +63,9 @@
 			    x: data_x,
 			    y: data_y,
 			    type: 'lines',
+			     marker: {
+              color: '#3ce24a'
+            },
 			    
 			    name: word.nombre
 			  }
@@ -63,35 +73,39 @@
 
 			graficas.push(data)
 
-		
-		});
-
-		console.log('graficas',graficas)
-
-		var layout = {
-			    title: 'Altcoins',
+			var layout = {
+			    title: word.nombre,
+			    plot_bgcolor:"#252323",
+            	paper_bgcolor:"#252323",
 			    xaxis: {
-				    
-				    showgrid: false,
-				    zeroline: false
+	
+				    showgrid: false, 
+				    zeroline: false, 
+				    visible: false
 				 },
-			    showlegend: true,
+			    showlegend: false,
 			    font: {
 			    family: 'Play',
 			    size: 15,
 			    margin: {
-				    autoexpand: false,
-				    l: 100,
+				    autoexpand: true,
+				    l: 0,
 				    r: 20,
 				    t: 100
 				  },
-			    color: '#424242'}
+				
+			    color: '#fff'}
 			};
 
 
-		Plotly.newPlot('altcoins', graficas,layout);
+			Plotly.newPlot(word.nombre, graficas,layout);
 
+		
+		});
 
+	
+
+/*
 		//BITCOIN
 
 		graficas=[]
@@ -120,8 +134,10 @@
 			var data = {
 			    x: data_x,
 			    y: data_y,
-			    type: 'lines',
-			    
+			    type: 'area',
+			     marker: {
+              color: '#3ce24a'
+            },
 			    name: word.nombre
 			  }
 			
@@ -135,6 +151,8 @@
 
 		var layout = {
 			    title: 'Bitcoin '+altcoins[0]['precio']+ ' USDT',
+			     plot_bgcolor:"#252323",
+           		 paper_bgcolor:"#252323",
 			    xaxis: {
 				    
 				    showgrid: false,
@@ -150,7 +168,8 @@
 				    r: 20,
 				    t: 100
 				  },
-			    color: '#424242'}
+				
+			    color: '#fff'}
 			};
 
 
@@ -185,7 +204,9 @@
 			    x: data_x,
 			    y: data_y,
 			    type: 'lines',
-			    
+			    marker: {
+              color: '#3ce24a'
+            },
 			    name: word.nombre
 			  }
 			
@@ -199,6 +220,8 @@
 
 		var layout = {
 			    title: 'Ethereum '+altcoins[0]['precio']+ ' USDT',
+			    plot_bgcolor:"#252323",
+            paper_bgcolor:"#252323",
 			    xaxis: {
 				    
 				    showgrid: false,
@@ -214,11 +237,14 @@
 				    r: 20,
 				    t: 100
 				  },
-			    color: '#424242'}
+				   
+			    color: '#fff'}
 			};
 
 
 		Plotly.newPlot('ethereum', graficas,layout);
+
+		*/
 	</script>
 
 

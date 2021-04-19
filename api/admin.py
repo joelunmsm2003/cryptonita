@@ -59,6 +59,10 @@ class HistorialAdmin(admin.ModelAdmin):
     list_display = ('id','price','criptomoneda','fecha',)
     list_filter = ('criptomoneda',)
 
+@admin.register(Cuentas)
+class CuentasAdmin(admin.ModelAdmin):
+    list_display = ('id','nombre',)
+
 
 @admin.register(HistorialUser)
 class HistorialUserAdmin(admin.ModelAdmin):
@@ -69,11 +73,19 @@ class HistorialUserAdmin(admin.ModelAdmin):
 
 @admin.register(Inversion)
 class InversionsAdmin(admin.ModelAdmin):
-    list_display = ('id','criptomoneda','eliminado','comprada_usd','precio_usd','cantidad_comprada','_ganancia','_porcentaje_ganancia','transaccion','fecha')
+    list_display = ('id','criptomoneda','precio_usd','comprada_usd','_ganancia','transaccion','fecha')
     list_filter = ('criptomoneda','transaccion')
-    list_editable = ('eliminado',)
-
+   
     actions = ['actualizar']
+
+    def save_model(self, request, obj, form, change):
+
+        super(InversionsAdmin, self).save_model(request, obj, form, change)
+
+        inv=Inversion.objects.get(id=obj.id)
+        inv.comprada_usd=round(obj.cantidad_comprada*obj.precio_usd,3)
+        inv.save()
+
 
     def _comprada_usd(self, obj):
         return obj.comprada_usd

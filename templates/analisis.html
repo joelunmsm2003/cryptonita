@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class='container'>
+
+    <div style="height: 20px;"></div>
+   
+  
+
+ <div style="height: 20px;"></div>
+
+
+    
+    <div style='display: grid;grid-template-columns: 50% 50%'>
+
+    <div id="inversion"  style="height: 700px;" ></div>
+    
+     <!-- <div id="ganancia" style="height: 700px;" ></div>-->
+    <!--<div id="porcentaje" style="height: 700px;" ></div>-->
+    </div>
+
+
+   <!-- <div id="ganancia" style="height: 700px;" ></div>-->
+  
+    <style type="text/css">
+        
+        .modebar {
+        display: none !important;
+        }
+
+        body{
+            background:#252323;
+            color:#dee4ea;
+        }
+        .subtitulo{
+            display: grid;
+            grid-template-columns: 16% 90%;
+        }
+
+        @media only screen and (max-width: 768px) {
+          /* For mobile phones: */
+            .subtitulo{
+                display: grid;
+                grid-template-columns: 40% 60%;
+            }
+        }
+
+    </style>
+
+    <script>
+
+
+
+        var data='{{data|safe}}'
+        console.log('data',data)
+        data = JSON.parse(data)
+        console.log(data)
+
+        labels=data.map(d=>{
+            return d.moneda
+        })
+        values=data.map(d=>{
+            return d.comprada_usd
+        })
+
+        ganancia=data.map(d=>{
+            return d.ganancia
+        })
+
+          porcentaje=data.map(d=>{
+            return d.porcentaje
+        })
+
+        console.log(labels,values)
+
+
+
+var data = [{
+  values: values,
+  labels: labels,
+  type: 'pie',
+  textinfo: "label+percent",
+  textposition: "inside",
+  automargin: true
+}];
+
+ var layout = {
+            title: '',
+     
+            plot_bgcolor:"#252323",
+            paper_bgcolor:"#252323",
+            annotations: [{
+                text: "Retorno Inversion" ,
+                  font: {
+                  size: 15,
+                  color: 'rgb(116, 101, 130)',
+                },
+                showarrow: false,
+                align: 'center',
+                x: 0.5,
+                y: 1,
+                xref: 'paper',
+                yref: 'paper',
+              }],
+            showlegend: false,
+            font: {
+            family: 'Play',
+            size: 13,
+            color: '#fff'}
+        };
+
+Plotly.newPlot('inversion', data, layout);
+     
+
+
+var data = [{
+  values: ganancia,
+  labels: labels,
+  type: 'pie',
+  textinfo: "label+percent",
+  textposition: "inside",
+  automargin: true
+}];
+
+ var layout = {
+            title: '',
+           
+            plot_bgcolor:"#252323",
+            paper_bgcolor:"#252323",
+            annotations: [{
+                text: "" ,
+                  font: {
+                  size: 15,
+                  color: 'rgb(116, 101, 130)',
+                },
+                showarrow: false,
+                align: 'center',
+                x: 0.5,
+                y: 1,
+                xref: 'paper',
+                yref: 'paper',
+              }],
+            showlegend: true,
+            font: {
+            family: 'Play',
+            size: 13,
+            color: '#fff'}
+        };
+
+Plotly.newPlot('ganancia', data, layout);
+     
+
+
+
+var data = [{
+  values: porcentaje,
+  labels: labels,
+  type: 'pie',
+  textinfo: "label+percent",
+  textposition: "inside",
+  automargin: true
+}];
+
+ var layout = {
+            title: '',
+           
+            plot_bgcolor:"#252323",
+            paper_bgcolor:"#252323",
+            annotations: [{
+                text: "Porcentaje Ganancia" ,
+                  font: {
+                  size: 15,
+                  color: 'rgb(116, 101, 130)',
+                },
+                showarrow: false,
+                align: 'center',
+                x: 0.5,
+                y: 1,
+                xref: 'paper',
+                yref: 'paper',
+              }],
+            showlegend: false,
+            font: {
+            family: 'Play',
+            size: 13,
+            color: '#fff'}
+        };
+
+Plotly.newPlot('porcentaje', data, layout);
+</script>
+
+</div>
+
+{% endblock %}
+
+
+
+
+

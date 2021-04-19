@@ -11,6 +11,7 @@ import requests
 from pycoingecko import CoinGeckoAPI
 import time
 import datetime
+from bs4 import BeautifulSoup
 
 @csrf_exempt
 def seteaprecio(request):
@@ -19,17 +20,43 @@ def seteaprecio(request):
 
 	for m in monedas:
 
+		res=requests.get('https://www.coingecko.com/es/monedas/'+m.nombre.lower())
+		data = res.text
+		soup = BeautifulSoup(data)
+
+		for link in soup.find_all('div', class_='post-body'):
+			soup =  BeautifulSoup(str(link))
+
+			for b in soup.find_all('b'):
+				valor=b.text
+
+
+			precio=valor.replace('$','').replace('.','').replace(',','.')
+
+			print('precio',precio)
+
+		m.precio=precio
+
+		m.save()
+
+		'''
+
 		cg = CoinGeckoAPI()
 
 		precio = cg.get_price(ids=m.nombre.lower(), vs_currencies='usd')
 
 		precio=precio[m.nombre.lower()]['usd']
+		'''
 
-		Historial(fecha=datetime.datetime.now(),price=precio,criptomoneda_id=m.id).save()
+		if precio:
+
+			Historial(fecha=datetime.datetime.now(),price=precio,criptomoneda_id=m.id).save()
 
 		ganancia=Inversion.objects.filter(criptomoneda_id=m.id)
 
 		ganancia_total=[]
+
+		'''
 
 		for g in ganancia:
 
@@ -42,11 +69,12 @@ def seteaprecio(request):
 
 		ganancia_total=sum(ganancia_total)
 
-		HistorialUser(fecha=datetime.datetime.now(),price=precio,criptomoneda_id=m.id,ganancia=ganancia_total).save()
+		'''
 
-		m.precio=precio
+		#HistorialUser(fecha=datetime.datetime.now(),price=precio,criptomoneda_id=m.id,ganancia=ganancia_total).save()
 
-		m.save()
+
+		
 
 	return JsonResponse(precio, safe=False)
 
@@ -129,13 +157,31 @@ def monedas(request,name):
 
 	if request.method == 'GET':
 
-		_historial=Historial.objects.filter(criptomoneda__nombre=name)
+		_historial=Historial.objects.filter(criptomoneda__nombre__contains=name).order_by('-id')[:1000]
 
-		_inversion=Inversion.objects.filter(criptomoneda__nombre=name,eliminado=False).order_by('-id')
+		serializer_historial = HistorialSerializer(_historial, many=True)
 
-		crypto=Criptomonedas.objects.get(nombre=name)
+		try:
 
-		allcryptos=Criptomonedas.objects.filter(activo=True)
+			ultimo_hora=(_historial[0].price-_historial[20].price)*100/float(_historial[20].price)
+
+			ultimo_4hora=(_historial[0].price-_historial[80].price)*100/float(_historial[80].price)
+
+			ultimodia=(_historial[0].price-_historial[20*24].price)*100/float(_historial[20*24].price)
+
+		except:
+
+			ultimo_hora=0
+			ultimo_4hora=0
+			ultimodia=0
+
+		_inversion=Inversion.objects.filter(criptomoneda__nombre__contains=name,eliminado=False,cuenta__nombre='Binance').order_by('id')
+
+		print('name',name)
+
+		crypto=Criptomonedas.objects.get(nombre__contains=name)
+
+		allcryptos=Criptomonedas.objects.filter(activo=True).order_by('-precio')
 
 		data=[]
 		data_inv=[]
@@ -146,6 +192,8 @@ def monedas(request,name):
 		ganancia_inversion=0
 		ganancia_total=0
 		cantidad_comprada=0
+		comprada_usd=0
+		vendida_usd=0
 		balance=0
 
 		# take second element for sort
@@ -155,6 +203,7 @@ def monedas(request,name):
 			elem_gan=[]
 			_in=_in+1
 			elem_gan.insert(1,_in)
+
 			if i.transaccion=='C':
 				signo=1
 			else:
@@ -162,7 +211,13 @@ def monedas(request,name):
 
 			cantidad_comprada=cantidad_comprada+i.cantidad_comprada*signo
 
-			ganancia_total=ganancia_total+i.ganancia*signo
+			if signo==1:
+				comprada_usd=comprada_usd+i.comprada_usd
+			else:
+				vendida_usd=vendida_usd+i.comprada_usd
+
+			
+
 			elem_gan.insert(2,i.ganancia*signo)
 			elem_gan.insert(3,i.porcentaje_ganancia*signo)
 			ganancia_inversion=ganancia_inversion+i.ganancia*signo
@@ -184,7 +239,7 @@ def monedas(request,name):
 
 		
 		
-		return render(request, 'monedas.html', {'balance':cantidad_comprada*crypto.precio,'title': name,'data':data,'crypto':crypto,'allcryptos':allcryptos,'inversion':data_inv,'cantidad_comprada':round(cantidad_comprada,5),'ganancia':data_gan,'ganancia_total':round(ganancia_total,2)})
+		return render(request, 'monedas.html', {'historial':json.dumps(serializer_historial.data),'vendida_usd':round(vendida_usd,3),'ganancia_retorno':round(cantidad_comprada*crypto.precio+round(vendida_usd-comprada_usd,2),3),'comprada_usd':round(comprada_usd,3),'ultimo_hora':round(ultimo_hora,3),'ultimodia':round(ultimodia,3),'ultimo_4hora':round(ultimo_4hora,3),'balance':round(cantidad_comprada*crypto.precio,2),'title': name,'data':data,'crypto':crypto,'allcryptos':allcryptos,'inversion':data_inv,'cantidad_comprada':round(cantidad_comprada,5),'ganancia':data_gan,'inversion_usd':round(vendida_usd-comprada_usd,2)*-1})
 
 
 @csrf_exempt
@@ -193,9 +248,11 @@ def monitor(request):
 	if request.method == 'GET':
 
 
+		total=HistorialUser.objects.all().count()
+
 		_historial=HistorialUser.objects.all().order_by('-id')[:5000]
 
-		_criptos=Criptomonedas.objects.filter(activo=True)
+		_criptos=Criptomonedas.objects.filter(activo=True).order_by('-precio')
 
 		serializer_cryptos = CriptomonedasSerializer(_criptos, many=True)
 
@@ -205,3 +262,47 @@ def monitor(request):
 		return render(request, 'inversiones.html', {'title': 'name','allcryptos':_criptos,'cryptos':json.dumps(serializer_cryptos.data),'historial':json.dumps(serializer_historial.data)})
 
 
+@csrf_exempt
+def analisis(request):
+
+	if request.method == 'GET':
+
+		cryptos=Criptomonedas.objects.filter(activo=True)
+
+		print(cryptos)
+		
+
+		data=[]
+
+		for c in cryptos:
+			ganancia=0
+			comprada_usd=0
+			porcentaje=0
+			vendida_usd=0
+			porcentaje_vendida=0
+
+			inv=Inversion.objects.filter(criptomoneda__nombre__contains=c.nombre)
+			
+			for i in inv:
+
+				if i.transaccion=='C':
+					signo=1
+				else:
+					signo=-1
+
+				ganancia=ganancia+i.ganancia*signo
+
+				if signo==1:
+					comprada_usd=comprada_usd+i.comprada_usd
+					porcentaje=porcentaje+i.ganancia/i.comprada_usd
+				else:
+					vendida_usd=vendida_usd+i.comprada_usd
+					porcentaje_vendida=porcentaje_vendida+i.ganancia/i.comprada_usd
+
+				
+			
+			detalle={'moneda':c.nombre,'ganancia':ganancia,'comprada_usd':vendida_usd-comprada_usd,'porcentaje':porcentaje-porcentaje_vendida}
+			data.insert(1,detalle)
+			print(data)
+			
+		return render(request, 'analisis.html', {'data':json.dumps(data)})

@@ -103,10 +103,23 @@ compra_venta = (
         ('V', 'Venta')
     )
 
+class Cuentas(models.Model):
+    nombre = models.CharField(blank=False, max_length=100)
+    address = models.CharField(blank=False, max_length=100)
+    fecha = models.DateTimeField(blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = 'Cuentas'
+
+    def __str__(self):
+       return str(self.nombre)
+       
 class Inversion(models.Model):
-    cantidad_comprada = models.FloatField(blank=False, max_length=100, null=True)
-    precio_usd = models.FloatField(blank=False, max_length=100, null=True)
-    comprada_usd = models.FloatField(blank=False, max_length=100, null=True)
+    cantidad_comprada = models.FloatField(blank=True, null=True, max_length=100)
+    cuenta = models.ForeignKey(Cuentas, blank=True, null=True, on_delete=models.CASCADE)
+    precio_usd = models.FloatField(blank=True, null=True, max_length=100)
+    comprada_usd = models.FloatField(blank=True, null=True, max_length=100)
     fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
     criptomoneda = models.ForeignKey(Criptomonedas, blank=True, null=True, on_delete=models.CASCADE)
@@ -199,6 +212,7 @@ class HistorialUser(models.Model):
 
     def __str__(self):
        return str(self.price)
+
 
 
 

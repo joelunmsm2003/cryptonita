@@ -15,6 +15,7 @@ urlpatterns = [
     path('', include('api.urls')),
 	url(r'^seteaprecio/', seteaprecio),
 	url(r'^email/', email),
+    url(r'^analisis/', analisis),
 	url(r'^confirmacion/(\w+)', confirmacion),
     url(r'^health_check/', include('health_check.urls')),
     url(r'^api/token/$', TokenObtainPairView.as_view(), name='token_obtain_pair'),
