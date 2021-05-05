@@ -12,7 +12,7 @@ from pycoingecko import CoinGeckoAPI
 import time
 import datetime
 from bs4 import BeautifulSoup
-
+import pandas as pd
 @csrf_exempt
 def seteaprecio(request):
 
@@ -35,9 +35,16 @@ def seteaprecio(request):
 
 			print('precio',precio)
 
-		m.precio=precio
 
-		m.save()
+		if precio:
+
+			if (float(precio)-float(m.precio))*100/float(m.precio) < 50:
+
+				Historial(fecha=datetime.datetime.now(),price=precio,criptomoneda_id=m.id).save()
+
+				m.precio=precio
+
+				m.save()
 
 		'''
 
@@ -48,9 +55,8 @@ def seteaprecio(request):
 		precio=precio[m.nombre.lower()]['usd']
 		'''
 
-		if precio:
 
-			Historial(fecha=datetime.datetime.now(),price=precio,criptomoneda_id=m.id).save()
+			
 
 		ganancia=Inversion.objects.filter(criptomoneda_id=m.id)
 
@@ -152,14 +158,54 @@ def confirmacion(request,id):
 def takeSecond(elem):
 	return elem[4]
 
+def getPrecio(n):
+    return n['price']
+
+def getFecha(n):
+    return n['fecha']
+
+def takeSecond(elem):
+    return elem['fecha']
+
 @csrf_exempt
 def monedas(request,name):
 
 	if request.method == 'GET':
 
-		_historial=Historial.objects.filter(criptomoneda__nombre__contains=name).order_by('-id')[:1000]
+		list_medias=[20,480,2000]
+
+		_historial=Historial.objects.filter(criptomoneda__nombre__contains=name).order_by('-id')[:5000]
 
 		serializer_historial = HistorialSerializer(_historial, many=True)
+
+		result = serializer_historial.data
+
+		result.sort(key=takeSecond)
+
+		fechas=list(map(getFecha, result))
+
+		valor=list(map(getPrecio, result))
+
+		data = {'fecha': fechas,'valor': valor}
+
+		df_valor = pd.DataFrame(data,columns=['fecha','valor'])
+
+		df_valor.set_index("fecha", inplace = True)
+
+		_medias=[]
+
+		for lm in list_medias:
+
+			media=[]
+
+			rolling_mean = df_valor.valor.rolling(window=lm).mean()
+
+			for v in rolling_mean.index:
+				if str(rolling_mean[v])!='nan':
+					media.append({'fecha':v,'valor':rolling_mean[v]})
+
+			_medias.append(media)
+		
 
 		try:
 
@@ -235,11 +281,12 @@ def monedas(request,name):
 		data_gan.sort(key=lambda x: x[4])
 
 		data_inv.sort(key=lambda x: x[0])
+
 		data.sort(key=lambda x: x[0])
 
 		
 		
-		return render(request, 'monedas.html', {'historial':json.dumps(serializer_historial.data),'vendida_usd':round(vendida_usd,3),'ganancia_retorno':round(cantidad_comprada*crypto.precio+round(vendida_usd-comprada_usd,2),3),'comprada_usd':round(comprada_usd,3),'ultimo_hora':round(ultimo_hora,3),'ultimodia':round(ultimodia,3),'ultimo_4hora':round(ultimo_4hora,3),'balance':round(cantidad_comprada*crypto.precio,2),'title': name,'data':data,'crypto':crypto,'allcryptos':allcryptos,'inversion':data_inv,'cantidad_comprada':round(cantidad_comprada,5),'ganancia':data_gan,'inversion_usd':round(vendida_usd-comprada_usd,2)*-1})
+		return render(request, 'monedas.html', {'l_list_medias':json.dumps(list_medias),'medias':json.dumps(_medias),'historial':json.dumps(serializer_historial.data),'vendida_usd':round(vendida_usd,3),'ganancia_retorno':round(cantidad_comprada*crypto.precio+round(vendida_usd-comprada_usd,2),3),'comprada_usd':round(comprada_usd,3),'ultimo_hora':round(ultimo_hora,3),'ultimodia':round(ultimodia,3),'ultimo_4hora':round(ultimo_4hora,3),'balance':round(cantidad_comprada*crypto.precio,2),'title': name,'data':data,'crypto':crypto,'allcryptos':allcryptos,'inversion':data_inv,'cantidad_comprada':round(cantidad_comprada,5),'ganancia':data_gan,'inversion_usd':round(vendida_usd-comprada_usd,2)*-1})
 
 
 @csrf_exempt
@@ -270,7 +317,7 @@ def analisis(request):
 		cryptos=Criptomonedas.objects.filter(activo=True)
 
 		print(cryptos)
-		
+
 
 		data=[]
 
@@ -301,7 +348,7 @@ def analisis(request):
 
 				
 			
-			detalle={'moneda':c.nombre,'ganancia':ganancia,'comprada_usd':vendida_usd-comprada_usd,'porcentaje':porcentaje-porcentaje_vendida}
+			detalle={'moneda':c.nombre,'ganancia':ganancia,'comprada_usd':-vendida_usd+comprada_usd,'porcentaje':porcentaje-porcentaje_vendida}
 			data.insert(1,detalle)
 			print(data)
 			

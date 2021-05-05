@@ -208,22 +208,65 @@
 
         /////////
 
+        var media='{{medias|safe}}'
 
+        media=JSON.parse(media)
+
+
+        var l_list_medias='{{l_list_medias|safe}}'
+
+        l_list_medias=JSON.parse(l_list_medias)
+
+        console.log('l_list_medias',l_list_medias)
+
+        list_medias=[]
+
+        media.forEach(function(name,i,array){
+                
+                console.log(name,i,l_list_medias[i])
+
+                media_x=array[i].map(d=>new Date(d['fecha']))
+
+                media_y=array[i].map(d=>d['valor'])
+
+
+                console.log(media_y)
+
+                var data_media = {
+                    x: media_x,
+                    y: media_y,
+                    type: 'lines',
+                    
+                    
+                    name: 'SMA '+String(l_list_medias[i])
+                }
+
+                list_medias.push(data_media)
+
+        });
+
+        console.log('list_medias',list_medias)
+
+
+
+
+  
+
+        
 
         var historial='{{historial|safe}}'
         
         historial = JSON.parse(historial)
 
-        console.log(historial)
-
-
 
             data = historial
 
             data_x=data.map(d=>new Date(d['fecha']))
-            
-            data_y=data.map(d=>d['price'])
 
+            
+
+            data_y=data.map(d=>d['price'])
+            console.log('data_y',data_y)
         
             var data = {
                 x: data_x,
@@ -233,13 +276,13 @@
               color: '#3ce24a'
             },
                 
-                name: 'oo'
+                name: 'Precio'
               }
             
 
 
             var layout = {
-                title: '',
+                title: 'Historial',
                 plot_bgcolor:"#252323",
                 paper_bgcolor:"#252323",
                 xaxis: {
@@ -248,7 +291,7 @@
                     zeroline: false, 
                     visible: false
                  },
-                showlegend: false,
+                showlegend: true,
                 font: {
                 family: 'Play',
                 size: 15,
@@ -263,7 +306,7 @@
             };
 
 
-            Plotly.newPlot('historial',[data] ,layout);
+            Plotly.newPlot('historial',list_medias ,layout);
 
   
 
