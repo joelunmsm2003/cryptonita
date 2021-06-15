@@ -13,6 +13,9 @@ import time
 import datetime
 from bs4 import BeautifulSoup
 import pandas as pd
+from rest_framework import viewsets, permissions, generics
+
+
 @csrf_exempt
 def seteaprecio(request):
 
@@ -38,7 +41,7 @@ def seteaprecio(request):
 
 		if precio:
 
-			if (float(precio)-float(m.precio))*100/float(m.precio) < 50:
+			if abs(float(precio)-float(m.precio))*100/float(m.precio) < 50:
 
 				Historial(fecha=datetime.datetime.now(),price=precio,criptomoneda_id=m.id).save()
 
@@ -172,9 +175,11 @@ def monedas(request,name):
 
 	if request.method == 'GET':
 
-		list_medias=[20,480,2000]
+		list_medias=[20,300,2000]
 
-		_historial=Historial.objects.filter(criptomoneda__nombre__contains=name).order_by('-id')[:5000]
+		_historial=Historial.objects.filter(criptomoneda__nombre__contains=name).order_by('-id')[:6000]
+
+
 
 		serializer_historial = HistorialSerializer(_historial, many=True)
 
@@ -262,9 +267,12 @@ def monedas(request,name):
 			else:
 				vendida_usd=vendida_usd+i.comprada_usd
 
-			
+			if signo==1:
 
-			elem_gan.insert(2,i.ganancia*signo)
+				elem_gan.insert(2,i.ganancia*signo)
+
+			else:
+				elem_gan.insert(2,0)
 			elem_gan.insert(3,i.porcentaje_ganancia*signo)
 			ganancia_inversion=ganancia_inversion+i.ganancia*signo
 			elem_gan.insert(4,ganancia_inversion)
@@ -353,3 +361,119 @@ def analisis(request):
 			print(data)
 			
 		return render(request, 'analisis.html', {'data':json.dumps(data)})
+
+
+@csrf_exempt
+def historial(request,name):
+    """
+    List all code snippets, or create a new snippet.
+    """
+    if request.method == 'GET':
+
+        data = Historial.objects.filter(criptomoneda__nombre__contains=name)
+        serializer = HistorialSerializer(data, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+
+@csrf_exempt
+def alerta(request,name):
+	"""
+	List all code snippets, or create a new snippet.
+	"""
+	if request.method == 'GET':
+
+		list_medias=[20,300,2000]
+
+		_historial=Historial.objects.filter(criptomoneda__nombre__contains=name).order_by('-id')[:6000]
+
+		serializer_historial = HistorialSerializer(_historial, many=True)
+
+		result = serializer_historial.data
+
+		result.sort(key=takeSecond)
+
+		fechas=list(map(getFecha, result))
+
+		valor=list(map(getPrecio, result))
+
+		data = {'fecha': fechas,'valor': valor}
+
+		df_valor = pd.DataFrame(data,columns=['fecha','valor'])
+
+		df_valor.set_index("fecha", inplace = True)
+
+		_medias=[]
+
+		for lm in list_medias:
+
+			media=[]
+
+			rolling_mean = df_valor.valor.rolling(window=lm).mean()
+
+			for v in rolling_mean.index:
+				if str(rolling_mean[v])!='nan':
+					media.append({'fecha':v,'valor':rolling_mean[v]})
+
+			_medias.append(media)
+
+
+		for d in range(len(_medias[2])):
+
+
+			cruce=list(filter(lambda e: e['fecha'] ==_medias[2][d]['fecha'], _medias[1]))
+			if len(cruce)>0:
+				print('cruce',_medias[2][d]['fecha'],_medias[2][d]['valor']>cruce[0]['valor'],(_medias[2][d]['valor']-cruce[0]['valor'])*100/_medias[2][d]['valor'])
+		
+		
+		tendencia=Criptomonedas.objects.filter(nombre__contains=name).order_by('-id')[:1]
+		print(tendencia[0].tendencia)
+
+		status_actual=_medias[2][d]['valor']>cruce[0]['valor']
+		status_anterior=tendencia[0].tendencia
+
+		cri=Criptomonedas.objects.get(nombre__contains=name)
+		cri.tendencia=_medias[2][d]['valor']>cruce[0]['valor']
+		cri.save()
+
+		if str(status_anterior)!=str(status_actual):
+			return JsonResponse(' Alerta '+name+str(status_actual), safe=False)
+		
+		
+		return JsonResponse('No hay alertas para '+str(name), safe=False)
+
+
+@csrf_exempt
+def historical(request,name):
+	# dummy variables
+
+	if request.method == 'GET':
+		n=1000
+		n2=500
+		precio=[]
+		fecha=[]
+		_historial=Historial.objects.filter(criptomoneda__nombre__contains=name).order_by('-id')[:n]
+
+
+		for h in _historial:
+			precio.append(h.price)
+			fecha.append(h.fecha)
+		
+
+		
+		df = pd.DataFrame({'time':fecha, 
+		                   'ticker': ['ticker1']*n, 
+		                   'price':precio})
+
+		# groupby and agg, then reset_index
+		df_f = df.groupby(['ticker', pd.Grouper(key='time', freq='1440T')])\
+		         .agg(open=pd.NamedAgg(column='price', aggfunc='first'), 
+		              close=pd.NamedAgg(column='price', aggfunc='last'), 
+		              high=pd.NamedAgg(column='price', aggfunc='max'), 
+		              low=pd.NamedAgg(column='price', aggfunc='min'))\
+		         .reset_index()
+
+
+		print(df_f.head(10))
+
+		return JsonResponse(list(df_f), safe=False)
+

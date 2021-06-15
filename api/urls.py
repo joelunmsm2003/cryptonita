@@ -18,7 +18,7 @@ router.register('api/v1/cercademi', CercademiViewSet, 'cercademi')
 router.register('api/v1/promociones', PromocionViewSet, 'promociones')
 router.register('api/v1/cryptos', CriptomonedasViewSet, 'cryptos')
 router.register('api/v1/inversiones', InversionViewSet, 'inversiones')
-router.register('api/v1/historial', HistorialViewSet, 'historial')
+router.register(r'api/v1/historial/(?P<username>.+)', HistorialViewSet, 'historial')
 
 admin.site.site_header = 'Prediptivo System'
 

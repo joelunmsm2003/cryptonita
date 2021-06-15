@@ -24,6 +24,8 @@ urlpatterns = [
     url(r'^monedas/(\w+)', monedas),
     url(r'^cryptos', cryptos),
     url(r'^monitor', monitor),
+    url(r'^alerta/(\w+)', alerta),
+    url(r'^historical/(\w+)', historical),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

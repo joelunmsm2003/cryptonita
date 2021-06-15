@@ -17,6 +17,21 @@ class HistorialViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
 
+    def get_queryset(self):
+
+        name = self.request.query_params.get('username', None)
+
+        _historial=Historial.objects.filter(criptomoneda__nombre__contains=name).order_by('-id')[:1]
+
+        print('username',_historial)
+        """
+        This view should return a list of all the purchases for
+        the user as determined by the username portion of the URL.
+        """
+        
+        return Historial.objects.filter(criptomoneda__nombre__contains=name)
+
+
 class InversionViewSet(viewsets.ModelViewSet):
     queryset = Inversion.objects.all()
     serializer_class = InversionsSerializer
