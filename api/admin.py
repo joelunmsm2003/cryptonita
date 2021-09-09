@@ -47,10 +47,10 @@ admin.site.unregister(Group)
 
 @admin.register(Criptomonedas)
 class CriptomonedasAdmin(admin.ModelAdmin):
-    list_display = ('id','nombre','simbolo','precio','sigla','activo')
+    list_display = ('id','nombre','simbolo','precio','sigla','activo','tendencia')
     list_filter = ('precio',)
     search_fields=('nombre','sigla')
-    list_editable = ('activo',)
+    #list_editable = ('activo',)
 
 
 

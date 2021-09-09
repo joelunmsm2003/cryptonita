@@ -17,6 +17,8 @@
     <div id="inversion"  style="height: 700px;" ></div>
     
       <div id="ganancia" style="height: 700px;" ></div>
+
+      <div id="balance" style="height: 700px;" ></div>
     <!--<div id="porcentaje" style="height: 700px;" ></div>-->
     </div>
 
@@ -70,6 +72,10 @@
 
           porcentaje=data.map(d=>{
             return d.porcentaje
+        })
+
+           balance=data.map(d=>{
+            return d.balance
         })
 
         console.log(labels,values)
@@ -152,6 +158,42 @@ Plotly.newPlot('ganancia', data, layout);
      
 
 
+var data = [{
+  values: balance,
+  labels: labels,
+  type: 'pie',
+  textinfo: "label+percent",
+  textposition: "inside",
+  automargin: true
+}];
+
+ var layout = {
+            title: '',
+           
+            plot_bgcolor:"#252323",
+            paper_bgcolor:"#252323",
+            annotations: [{
+                text: "" ,
+                  font: {
+                  size: 15,
+                  color: 'rgb(116, 101, 130)',
+                },
+                showarrow: false,
+                align: 'center',
+                x: 0.5,
+                y: 1,
+                xref: 'paper',
+                yref: 'paper',
+              }],
+            showlegend: true,
+            font: {
+            family: 'Play',
+            size: 13,
+            color: '#fff'}
+        };
+
+Plotly.newPlot('balance', data, layout);
+     
 
 var data = [{
   values: porcentaje,

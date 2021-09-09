@@ -4,13 +4,27 @@
 
 <div class='container'>
 
-    <div style="height: 20px;"></div>
-   
+   <!-- <div style="height: 20px;"></div>
+
+
+     <select class="browser-default" id='selectCartera' onchange="myFunction()" style="width: 200px;">
+
+
+    
+                    <option  value="Binance">Binance</option>
+                    <option value="Huobi">Huobi</option>
+                    <option value="Kraken">Kraken</option>
+                    <option value="Polygon">Polygon</option>
+                    <option value="BSC">BSC</option>
+                    <option value="Ethereum">Ethereum</option>
+                    <option value="Ledger">Ledger</option>
+                  
+  </select>-->
+   <br>
   <select class="browser-default" id='mySelect' onchange="myFunction()" style="width: 200px;">
 
-    <option>Criptomoneda</option>
     {% for c in allcryptos %}
-                    <option value="{{c.nombre}}">{{c.nombre}} {{c.precio}}</option>
+                    <option  value="{{c.nombre}}">{{c.nombre}} {{c.precio}}</option>
                     {% endfor %}
   </select>
 
@@ -19,8 +33,11 @@
 
     <div style='display: grid;grid-template-columns: 30% 70%;'>
 
-        <div>    
-             <img src="{{crypto.icono}}">
+        <div>  
+             
+             <img style='max-width: 50px;' src="{{crypto.icono}}">
+
+
              <h5><div class='subtitulo'><strong style='color:#dee4ea;'>{{title | capfirst |truncatechars:9}}</strong> <span>{{crypto.precio}}</span> </div></h5>
 
              <h5><div class='subtitulo'><strong >Cantidad</strong>  <span>{{cantidad_comprada}}</span></div></h5>
@@ -111,9 +128,18 @@
         function myFunction() {
           var x = document.getElementById("mySelect").value;
 
-          window.location.href = "http://app01.comunica7.com:5500/monedas/"+x;
+          //var y = document.getElementById("selectCartera").value;
+
+          
+
+          x=x.replace('-', '_')
+          x=x.replace('-', '_')
+
+          window.location.href = "http://app01.comunica7.com:5500/monedas/"+x+"/NaN/Binance";
           
         }
+
+
          
         var ganancia_total='{{ganancia_total}}'
 
@@ -268,7 +294,7 @@
             
 
             data_y=data.map(d=>d['price'])
-            console.log('data_y',data_y)
+            console.log('data_y',data_x,data_y)
         
             var data = {
                 x: data_x,
