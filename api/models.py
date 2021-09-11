@@ -336,3 +336,31 @@ class Cercademi(models.Model):
         return str(self.local.descripcion)
 
 
+
+class Portofolio(models.Model):
+    criptomoneda = models.ForeignKey(Criptomonedas, blank=True, null=True, on_delete=models.CASCADE)
+    cantidad = models.FloatField(blank=True, max_length=100, null=True)
+    balance_usd = models.FloatField(blank=True, max_length=100, null=True)
+    comprada_usd = models.FloatField(blank=True, max_length=100, null=True)
+    venta_usd = models.FloatField(blank=True, max_length=100, null=True)
+    inversion_usd = models.FloatField(blank=True, max_length=100, null=True)
+    ganancia_usd = models.FloatField(blank=True, max_length=100, null=True)
+    cambio_hora = models.FloatField(blank=True, max_length=100, null=True)
+    cambio_4hora = models.FloatField(blank=True, max_length=100, null=True)
+    cambio_dia = models.FloatField(blank=True, max_length=100, null=True)
+    fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = 'Portafolio'
+
+    @property
+    def _ganancia_usd_indicador(self):
+
+        crypto=  Criptomonedas.objects.get(id=self.criptomoneda.id)
+
+        balance_usd=self.cantidad*crypto.precio
+
+        ganancia_usd=balance_usd-self.inversion_usd
+
+        return ganancia_usd

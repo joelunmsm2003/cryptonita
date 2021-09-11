@@ -21,7 +21,10 @@ def seteaprecio(request):
 
 	monedas = Criptomonedas.objects.all()
 
+
+
 	for m in monedas:
+
 		print(m.nombre.lower())
 		res=requests.get('https://coinmarketcap.com/currencies/'+m.nombre.lower())
 		data = res.text
@@ -250,7 +253,7 @@ def monedas(request,name,precio,plataforma):
 			ultimo_4hora=0
 			ultimodia=0
 
-		_inversion=Inversion.objects.filter(criptomoneda__nombre=name,eliminado=False,cuenta__nombre=plataforma).order_by('id')
+		_inversion=Inversion.objects.filter(criptomoneda__nombre=name,eliminado=False).order_by('id')
 
 		print('name',name)
 
