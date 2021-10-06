@@ -16,3 +16,4 @@ python-resize-image
 pycoingecko
 bs4
 pandas
+tradingview_ta

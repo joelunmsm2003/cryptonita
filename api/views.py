@@ -14,7 +14,7 @@ import datetime
 from bs4 import BeautifulSoup
 import pandas as pd
 from rest_framework import viewsets, permissions, generics
-
+from tradingview_ta import TA_Handler, Interval, Exchange
 
 @csrf_exempt
 def seteaprecio(request):
@@ -29,6 +29,21 @@ def seteaprecio(request):
 		res=requests.get('https://coinmarketcap.com/currencies/'+m.nombre.lower())
 		data = res.text
 		soup = BeautifulSoup(data)
+
+		try:
+
+			crypto=m.simbolo.lower()
+			tesla = TA_Handler(
+				symbol=crypto+"USDT",
+				screener="crypto",
+				exchange="binance",
+				interval=Interval.INTERVAL_1_DAY
+				)
+			m.recomendacion=tesla.get_analysis().summary['RECOMMENDATION']
+
+		except:
+
+			m.recomendacion='Nose'
 
 
 
@@ -64,8 +79,7 @@ def seteaprecio(request):
 		'''
 
 
-			
-
+		
 		ganancia=Inversion.objects.filter(criptomoneda_id=m.id)
 
 		ganancia_total=[]

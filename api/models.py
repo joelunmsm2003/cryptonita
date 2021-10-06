@@ -88,6 +88,7 @@ class Criptomonedas(models.Model):
     sigla =models.CharField(blank=False, max_length=100, null=True)
     nombre =models.CharField(blank=False, max_length=100, null=True)
     tendencia = models.CharField(blank=False, max_length=100, null=True)
+    recomendacion = models.CharField(blank=False, max_length=100, null=True)
     activo = models.CharField(blank=True, max_length=100, null=True)
     fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)

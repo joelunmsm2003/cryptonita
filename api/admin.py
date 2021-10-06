@@ -47,7 +47,7 @@ admin.site.unregister(Group)
 
 @admin.register(Criptomonedas)
 class CriptomonedasAdmin(admin.ModelAdmin):
-    list_display = ('id','nombre','simbolo','precio','sigla','activo','tendencia')
+    list_display = ('id','nombre','simbolo','precio','sigla','activo','recomendacion')
     list_filter = ('precio',)
     search_fields=('nombre','sigla')
     #list_editable = ('activo',)
@@ -66,7 +66,13 @@ class CuentasAdmin(admin.ModelAdmin):
 
 @admin.register(Portofolio)
 class PortofolioAdmin(admin.ModelAdmin):
-    list_display = ('id','criptomoneda','cantidad','_balance_usd','comprada_usd','venta_usd','inversion_usd','_ganancia_usd','porcentaje')
+    list_display = ('crypto','criptomoneda','cantidad','_balance_usd','comprada_usd','venta_usd','inversion_usd','_ganancia_usd','porcentaje')
+
+    def crypto(self, obj):
+
+        crypto=  Criptomonedas.objects.get(id=obj.criptomoneda.id)
+
+        return format_html('<img style="max-width:25px;" src="'+crypto.icono+'" ></img>')
 
     def _balance_usd(self, obj):
 
@@ -125,8 +131,24 @@ class PortofolioAdmin(admin.ModelAdmin):
             
         texto="<span style='display:grid;grid-template-columns:auto auto auto;'>"+"<span>"+ultimodia+"</span><span>"+ultimo_4hora+"</span><span>"+ultimo_hora+"</span></span>"
 
-        return format_html('<a style="color:red;" target="_blank" href="http://app01.comunica7.com:5500/monedas/'+crypto.nombre+'/NaN/Binance" >'+str(texto)+'</a>')
+        url='http://app01.comunica7.com:5500/admin/api/inversion/?criptomoneda__id__exact='+str(crypto.id)
+
+        return format_html('<a style="color:red;" target="_blank" href="'+url+'" >'+str(texto)+'</a>')
  
+    def recomendacion(self, obj):
+
+        crypto=  Criptomonedas.objects.get(id=obj.criptomoneda.id)
+
+        if crypto.recomendacion=='BUY' or crypto.recomendacion=='STRONG_BUY':
+
+            return format_html('<a style="color:green;" >'+str(crypto.recomendacion)+'</a>')
+
+        if crypto.recomendacion=='SELL' or crypto.recomendacion=='STRONG_SELL':
+
+            return format_html('<a style="color:RED;" >'+str(crypto.recomendacion)+'</a>')
+
+        return crypto.recomendacion
+
 
     def _ganancia_usd(self, obj):
 
@@ -136,7 +158,7 @@ class PortofolioAdmin(admin.ModelAdmin):
 
         ganancia_usd=balance_usd-obj.inversion_usd
 
-        if int(ganancia_usd)<0:
+        if ganancia_usd<0:
             return format_html('<span  style="color:red;">'+str(round(ganancia_usd,3))+'</span>')
         else:
             return format_html('<span  style="color:green;">'+str(round(ganancia_usd,3))+'</span>')
@@ -152,8 +174,8 @@ class HistorialUserAdmin(admin.ModelAdmin):
 
 @admin.register(Inversion)
 class InversionsAdmin(admin.ModelAdmin):
-    list_display = ('id','criptomoneda','cantidad_comprada','comprada_usd','_ganancia','transaccion','fecha')
-    list_filter = ('criptomoneda','transaccion')
+    list_display = ('id','criptomoneda','cuenta','cantidad_comprada','comprada_usd','_ganancia','transaccion','fecha')
+    list_filter = ('cuenta','criptomoneda','transaccion')
    
     actions = ['actualizar']
 
@@ -210,6 +232,8 @@ class InversionsAdmin(admin.ModelAdmin):
 
         ganancia_usd=balance_usd-inversion_usd
 
+        Portofolio.objects.filter(criptomoneda_id=obj.criptomoneda.id).delete()
+
         Portofolio(criptomoneda_id=obj.criptomoneda.id,cantidad=cantidad,balance_usd=round(balance_usd,3),comprada_usd=round(comprada_usd,3),venta_usd=round(vendida_usd,3),inversion_usd=round(inversion_usd,3),ganancia_usd=round(ganancia_usd,3)).save()
 
 
@@ -218,7 +242,13 @@ class InversionsAdmin(admin.ModelAdmin):
         return obj.comprada_usd
 
     def _ganancia(self, obj):
-        return round(obj.ganancia,2)
+
+        if obj.ganancia<0:
+            return format_html('<span  style="color:red;">'+str(round(obj.ganancia,3))+'</span>')
+        else:
+            return format_html('<span  style="color:green;">'+str(round(obj.ganancia,3))+'</span>')
+
+
 
 
     def _porcentaje_ganancia(self, obj):
