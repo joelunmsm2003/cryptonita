@@ -4,30 +4,32 @@ An example ["Django REST framework"](https://www.django-rest-framework.org/) JSO
 [![Build Status](https://travis-ci.com/freemanpd/django-rest-framework-jwt-example.svg?branch=master)](https://travis-ci.com/freemanpd/django-rest-framework-jwt-example)
 
 ## Requirements
-1. Python 3.6+
-1. Pipenv 
+1. Docker
 
 ## Installation
-1. Start Python virtual ENV
+Build dependencies
 ```
-pipenv shell
+docker-compose build
+docker-compose run mysql
+
+Launch
+
+docker-compose up -d
 ```
-2. Install dependencies
+## Commands
 ```
-pipenv install
+Run database migrations
 ```
-3. Run database migrations
+docker-compose run web python manage.py migrate
 ```
-python manage.py migrate
+Create admin user
 ```
-4. Create admin user
-```
-python manage.py createsuperuser --username admin
+docker-compose run web python manage.py createsuperuser --username admin
 ```
 
 ## Run application
 ```
-python manage.py runserver
+docker-compose up
 ```
 Once the server is running, visit http://127.0.0.1:8000 in your web browser. Now, you should see something like the following:
 

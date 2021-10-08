@@ -21,6 +21,7 @@ class MyUserManager(BaseUserManager):
         )
 
         user.set_password(password)
+        user.is_admin=True
         user.save(using=self._db)
         return user
 
@@ -201,140 +202,7 @@ class Historial(models.Model):
 
 
 
-class HistorialUser(models.Model):
-    criptomoneda = models.ForeignKey(Criptomonedas, blank=True, null=True, on_delete=models.CASCADE)
-    ganancia = models.FloatField(blank=True, max_length=100, null=True)
-    price = models.FloatField(blank=True, max_length=100, null=True)
-    fecha = models.DateTimeField(blank=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
 
-    class Meta:
-        verbose_name_plural = 'HistorialUser'
-
-    def __str__(self):
-       return str(self.price)
-
-
-
-
-
-class Movie(models.Model):
-    title = models.CharField(blank=False, max_length=100)
-    released = models.IntegerField(blank=False)
-    genre = models.CharField(blank=False, max_length=100)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name_plural = 'Movies'
-
-    def __str__(self):
-       return self.title
-
-class Medidas(models.Model):
-    menu = models.CharField(blank=False, max_length=100)
-    medida =models.CharField(blank=False, max_length=100)
-    label = models.CharField(blank=False, max_length=100)
-    fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name_plural = 'Medidas'
-
-    def __str__(self):
-       return self.menu
-
-
-
-class Categoria(models.Model):
-    nombre = models.CharField(blank=False, max_length=100)
-    foto = models.FileField(upload_to='static',blank=True, null=True)
-    fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
-    descripcion = models.CharField(blank=False, max_length=1000,null=True)
-
-
-    class Meta:
-        verbose_name_plural = 'Categorias'
-
-    def __str__(self):
-       return self.nombre
-
-class Subcategoria(models.Model):
-    nombre = models.CharField(blank=False, max_length=100)
-    foto = models.FileField(upload_to='static',blank=True, null=True)
-    categoria = models.ForeignKey(Categoria, blank=True, null=True, on_delete=models.CASCADE)
-    fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
-    descripcion = models.CharField( max_length=1000,blank=False, null=True)
-
-    class Meta:
-        verbose_name_plural = 'Subcateogorias'
-
-    def __str__(self):
-       return self.nombre
-
-class Local(models.Model):
-    nombre = models.CharField(blank=False, max_length=100)
-    foto = models.FileField(upload_to='static',blank=True, null=True)
-    subcategoria = models.ForeignKey(Subcategoria, blank=True, null=True, on_delete=models.CASCADE)
-    fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
-    descripcion = models.CharField( max_length=1000,blank=False, null=True)
-
-    class Meta:
-        verbose_name_plural = 'Locales'
-
-    def __str__(self):
-       return self.nombre
-
-class Promocion(models.Model):
-    nombre = models.CharField(blank=False, max_length=100)
-    local = models.ForeignKey(Local, blank=True, null=True, on_delete=models.CASCADE)
-    fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
-    descuento = models.CharField(blank=False, max_length=100)
-
-    class Meta:
-        verbose_name_plural = 'Promocion'
-
-    def __str__(self):
-       return self.nombre
-
-    @property
-    def foto_local(self):
-
-        #foto=Local.objects.get(id=self.id).foto
-        return str(self.local.foto)
-
-
-class Favoritos(models.Model):
-    local = models.ForeignKey(Local, blank=True, null=True, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
-    fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
-
-    class Meta:
-        verbose_name_plural = 'Favoritos'
-
-    def __str__(self):
-       return self.local.nombre
-
-class Cercademi(models.Model):
-    local = models.ForeignKey(Local, blank=True, null=True, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
-    fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
-
-
-    class Meta:
-        verbose_name_plural = 'Cerca de mi'
-
-
-    @property
-    def foto_local(self):
-
-        #foto=Local.objects.get(id=self.id).foto
-        return str(self.local.foto)
-
-    @property
-    def descripcion(self):
-
-        #foto=Local.objects.get(id=self.id).foto
-        return str(self.local.descripcion)
 
 
 

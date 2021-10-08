@@ -9,13 +9,8 @@ from rest_framework_simplejwt.views import (
 
 
 router = routers.DefaultRouter()
-#router.register('api/v1/movie', MovieViewSet, 'movie')
-#router.register('api/v1/medidas', MedidasViewSet, 'medidas')
-router.register('api/v1/subcategorias', SubcategoriaViewSet, 'subcategorias')
-router.register('api/v1/categorias', CategoriaViewSet, 'categorias')
-router.register('api/v1/favoritos', FavoritosViewSet, 'favoritos')
-router.register('api/v1/cercademi', CercademiViewSet, 'cercademi')
-router.register('api/v1/promociones', PromocionViewSet, 'promociones')
+
+
 router.register('api/v1/cryptos', CriptomonedasViewSet, 'cryptos')
 router.register('api/v1/inversiones', InversionViewSet, 'inversiones')
 router.register(r'api/v1/historial/(?P<username>.+)', HistorialViewSet, 'historial')

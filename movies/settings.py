@@ -163,7 +163,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'crypto',
-        'USER': 'root',
+        'USER': 'crypto',
         'PASSWORD': 'secret',
         'HOST': 'mysql',
         'PORT': '3306',
