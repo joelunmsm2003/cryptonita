@@ -164,13 +164,7 @@ class PortofolioAdmin(admin.ModelAdmin):
             return format_html('<span  style="color:green;">'+str(round(ganancia_usd,3))+'</span>')
 
 
-'''
-@admin.register(HistorialUser)
-class HistorialUserAdmin(admin.ModelAdmin):
-    list_display = ('id','price','criptomoneda','fecha','ganancia')
-    list_filter = ('criptomoneda',)
 
-'''
 
 @admin.register(Inversion)
 class InversionsAdmin(admin.ModelAdmin):
