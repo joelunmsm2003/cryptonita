@@ -26,7 +26,7 @@ def seteaprecio(request):
 	for m in monedas:
 
 		print(m.nombre.lower())
-		res=requests.get('https://coinmarketcap.com/currencies/'+m.nombre.lower())
+		res=requests.get('https://coinmarketcap.com/currencies/'+m.sigla.lower())
 		data = res.text
 		soup = BeautifulSoup(data)
 
@@ -281,8 +281,13 @@ def getCrypto(request):
 
 					c=Criptomonedas.objects.get(sigla=slug)
 					c.precio=precio
+					c.icono=icono
+					c.sigla=slug
+					c.nombre=nombre
+					c.simbolo=simbolo
 					c.market_cap=market_cap.replace('$','').replace(',','')
 					c.volume_24h=volume_24h.replace('$','').replace(',','')
+					c.circulating_supply=circulating_supply.replace(',','')
 					c.save()
 
 
