@@ -45,6 +45,8 @@ def seteaprecio(request):
 
 			m.recomendacion='Nose'
 
+			
+
 
 
 		for link in soup.find_all('div', class_='priceValue'):
@@ -178,6 +180,121 @@ def email(request):
 		to = email
 
 		mail.send_mail(subject, plain_message, from_email, [to], html_message=html)
+
+		return JsonResponse('ok', safe=False)
+
+@csrf_exempt
+def getCrypto(request):
+
+	if request.method == 'GET':
+
+
+		res=requests.get('https://coinmarketcap.com/')
+		data = res.text
+		soup = BeautifulSoup(data)
+
+
+		for d in soup.find_all('a', class_='cmc-link'):
+
+			curr=d.get('href')
+
+			try:
+
+				slug=curr.split('/')[2]
+
+			except:
+
+				slug=''
+			
+
+			if '/currencies' in curr and 'markets' not in curr and '?period=7d' not in curr:
+
+				print(curr)
+
+				res=requests.get('https://coinmarketcap.com'+curr)
+				data = res.text
+				soup2 = BeautifulSoup(data)
+
+				for link in soup2.find_all('div', class_='priceValue'):
+
+					soup3 =  BeautifulSoup(str(link))
+
+					precio=soup3.text.replace('$','').replace(',','')
+
+
+				for p in soup2.find_all('div', class_='statsBlockInner'):
+
+					soup3 =  BeautifulSoup(str(p))
+
+					if 'Market Cap' in soup3.text:
+
+						if '$' in soup3.find_all('div',class_='statsValue')[0].text:
+
+							market_cap=soup3.find_all('div',class_='statsValue')[0].text
+
+							porcentaje_market_cap=soup3.text.split('Market Cap')[1].split(market_cap)[1]
+
+					if 'Fully Diluted Market Cap' in soup3.text:
+
+						fully_diluted_market_cap=soup3.text.split('Fully Diluted Market Cap')[1].replace('$','').replace(',','')
+
+					if 'Volume 24h' in soup3.text:
+
+						volume_24h=soup3.find_all('div',class_='statsValue')[0].text
+
+						porcentaje_volume_24h=soup3.text.split('Volume 24h')[1].replace('$','').replace(',','')
+
+					if 'Volume / Market Cap' in soup3.text:
+
+						volume_24h_market_cap=soup3.text.split('Volume / Market Cap')[1].replace('$','').replace(',','')
+
+
+				for p in soup2.find_all('div', class_='dCjIMS'):
+
+					soup3 =  BeautifulSoup(str(p))
+
+					circulating_supply=soup3.text.split('Circulating Supply')[1].split(' ')[0]
+
+					max_supply=soup3.text.split('Max Supply')[1].split('Total Supply')[0]
+
+					total_supply=soup3.text.split('Total Supply')[1]
+
+
+				for p in soup2.find_all('div', class_='emihhf'):
+
+					soup3 =  BeautifulSoup(str(p))
+
+					icono=soup3.find_all('img')[0].get('src')
+
+					nombre=soup3.find_all('b')[0].text
+
+					simbolo=soup3.text.split('Price')[0].split(nombre)[1]
+
+
+				
+				if Criptomonedas.objects.filter(sigla=slug).count()==0:
+
+					Criptomonedas(icono=icono,max_supply=max_supply.replace(',',''),total_supply=total_supply.replace(',',''),sigla=slug,nombre=nombre,simbolo=simbolo,precio=precio,market_cap=market_cap.replace('$','').replace(',',''),volume_24h=volume_24h.replace('$','').replace(',',''),volume_24h_market_cap=volume_24h_market_cap,circulating_supply=circulating_supply.replace(',','')).save()
+
+
+				else:
+
+					c=Criptomonedas.objects.get(sigla=slug)
+					c.precio=precio
+					c.market_cap=market_cap.replace('$','').replace(',','')
+					c.volume_24h=volume_24h.replace('$','').replace(',','')
+					c.save()
+
+
+
+					Historial(fecha=datetime.datetime.now(),price=precio,criptomoneda_id=c.id).save()
+
+
+
+
+	
+
+
 
 		return JsonResponse('ok', safe=False)
 

@@ -15,7 +15,7 @@ router.register('api/v1/cryptos', CriptomonedasViewSet, 'cryptos')
 router.register('api/v1/inversiones', InversionViewSet, 'inversiones')
 router.register(r'api/v1/historial/(?P<username>.+)', HistorialViewSet, 'historial')
 
-admin.site.site_header = 'Prediptivo System'
+admin.site.site_header = 'Cryptonita'
 
 
 

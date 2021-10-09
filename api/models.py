@@ -78,21 +78,27 @@ class MyUser(AbstractBaseUser):
 
 
 
-
-
-
-
 class Criptomonedas(models.Model):
-    precio = models.FloatField(blank=False, max_length=100, null=True)
-    simbolo =models.CharField(blank=False, max_length=100, null=True)
-    icono=models.CharField(blank=False, max_length=100, null=True)
-    sigla =models.CharField(blank=False, max_length=100, null=True)
-    nombre =models.CharField(blank=False, max_length=100, null=True)
-    tendencia = models.CharField(blank=False, max_length=100, null=True)
-    recomendacion = models.CharField(blank=False, max_length=100, null=True)
+    precio = models.FloatField(blank=True, max_length=100, null=True)
+    simbolo =models.CharField(blank=True, max_length=100, null=True)
+    icono=models.CharField(blank=True, max_length=100, null=True)
+    sigla =models.CharField(blank=True, max_length=100, null=True)
+    nombre =models.CharField(blank=True, max_length=100, null=True)
+    tendencia = models.CharField(blank=True, max_length=100, null=True)
+    recomendacion = models.CharField(blank=True, max_length=100, null=True)
     activo = models.CharField(blank=True, max_length=100, null=True)
     fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
+    market_cap = models.FloatField(blank=True, max_length=100, null=True)
+    fully_diluted_market_cap= models.CharField(blank=True, max_length=100, null=True)
+    volume_24h= models.CharField(blank=True, max_length=100, null=True)
+    volume_24h_market_cap= models.CharField(blank=True, max_length=100, null=True)
+    circulating_supply= models.CharField(blank=True, max_length=100, null=True)
+    max_supply= models.CharField(blank=True, max_length=100, null=True)
+    total_supply= models.CharField(blank=True, max_length=100, null=True)
+
+
+
 
     class Meta:
         verbose_name_plural = 'Criptomonedas'

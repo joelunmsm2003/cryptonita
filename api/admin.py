@@ -47,11 +47,17 @@ admin.site.unregister(Group)
 
 @admin.register(Criptomonedas)
 class CriptomonedasAdmin(admin.ModelAdmin):
-    list_display = ('id','nombre','simbolo','precio','sigla','activo','recomendacion')
+    list_display = ('crypto','simbolo','nombre','precio','market_cap','volume_24h','circulating_supply')
     list_filter = ('precio',)
     search_fields=('nombre','sigla')
     #list_editable = ('activo',)
 
+    def crypto(self, obj):
+
+        if obj.icono:
+            return format_html('<img style="max-width:25px;" src="'+obj.icono+'" ></img>')
+        else:
+            return obj.nombre
 
 
 @admin.register(Historial)
@@ -131,7 +137,7 @@ class PortofolioAdmin(admin.ModelAdmin):
             
         texto="<span style='display:grid;grid-template-columns:auto auto auto;'>"+"<span>"+ultimodia+"</span><span>"+ultimo_4hora+"</span><span>"+ultimo_hora+"</span></span>"
 
-        url='http://app01.comunica7.com:5500/admin/api/inversion/?criptomoneda__id__exact='+str(crypto.id)
+        url='http://localhost:5500/admin/api/inversion/?criptomoneda__id__exact='+str(crypto.id)
 
         return format_html('<a style="color:red;" target="_blank" href="'+url+'" >'+str(texto)+'</a>')
  

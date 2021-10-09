@@ -14,6 +14,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('api.urls')),
 	url(r'^seteaprecio/', seteaprecio),
+    url(r'^getCrypto/', getCrypto),
 	url(r'^email/', email),
     url(r'^analisis/', analisis),
 	url(r'^confirmacion/(\w+)', confirmacion),
