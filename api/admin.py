@@ -45,10 +45,9 @@ admin.site.unregister(Group)
 
 
 
-@admin.register(Criptomonedas)
-class CriptomonedasAdmin(admin.ModelAdmin):
-    list_display = ('crypto','simbolo','nombre','precio','market_cap','volume_24h','circulating_supply')
-    list_filter = ('precio',)
+@admin.register(Cryptocurrency)
+class CryptocurrencyAdmin(admin.ModelAdmin):
+    list_display = ('crypto','symbol','name','price','market_cap','volume_24h','circulating_supply')
     search_fields=('nombre','sigla')
     #list_editable = ('activo',)
 
@@ -65,32 +64,32 @@ class HistorialAdmin(admin.ModelAdmin):
     list_display = ('id','price','criptomoneda','fecha',)
     list_filter = ('criptomoneda',)
 
-@admin.register(Cuentas)
-class CuentasAdmin(admin.ModelAdmin):
-    list_display = ('id','nombre',)
+@admin.register(Account)
+class AccountAdmin(admin.ModelAdmin):
+    list_display = ('id','name',)
 
 
-@admin.register(Portofolio)
-class PortofolioAdmin(admin.ModelAdmin):
-    list_display = ('crypto','criptomoneda','cantidad','_balance_usd','comprada_usd','venta_usd','inversion_usd','_ganancia_usd','porcentaje')
+@admin.register(Portfolio)
+class PortfolioAdmin(admin.ModelAdmin):
+    list_display = ('crypto','cryptocurrency','quantity','_balance_usd','buy_usd','sell_usd','investing_usd','_profit_loss')
 
     def crypto(self, obj):
 
-        crypto=  Criptomonedas.objects.get(id=obj.criptomoneda.id)
+        crypto=  Cryptocurrency.objects.get(id=obj.cryptocurrency.id)
 
         return format_html('<img style="max-width:25px;" src="'+crypto.icono+'" ></img>')
 
     def _balance_usd(self, obj):
 
-        crypto=  Criptomonedas.objects.get(id=obj.criptomoneda.id)
+        crypto=  Cryptocurrency.objects.get(id=obj.cryptocurrency.id)
 
-        balance_usd=round(obj.cantidad*crypto.precio,3)
+        balance_usd=round(obj.quantity*crypto.price,3)
 
         return balance_usd
 
-    def porcentaje(self, obj):
+    def percentaje(self, obj):
 
-        _historial=Historial.objects.filter(criptomoneda_id=obj.criptomoneda.id).order_by('-id')[:6000]
+        _historial=Historial.objects.filter(criptomoneda_id=obj.cryptocurrency.id).order_by('-id')[:6000]
 
         try:
 
@@ -106,9 +105,9 @@ class PortofolioAdmin(admin.ModelAdmin):
             ultimo_4hora=0
             ultimodia=0
 
-        crypto=  Criptomonedas.objects.get(id=obj.criptomoneda.id)
+        crypto=  Cryptocurrency.objects.get(id=obj.cryptocurrency.id)
 
-        crypto.nombre=crypto.nombre.replace('-','_')
+        crypto.nombre=crypto.name.replace('-','_')
 
 
         if ultimodia<0:
@@ -141,9 +140,17 @@ class PortofolioAdmin(admin.ModelAdmin):
 
         return format_html('<a style="color:red;" target="_blank" href="'+url+'" >'+str(texto)+'</a>')
  
+    def _profit_loss(self, obj):
+
+        crypto=  Cryptocurrency.objects.get(id=obj.cryptocurrency.id)
+
+        url='http://localhost:5500/admin/api/transaction/?cryptocurrency__id__exact='+str(crypto.id)
+
+        return format_html('<a style="color:red;" target="_blank" href="'+url+'" >'+str(obj.profit_loss)+'</a>')
+
     def recomendacion(self, obj):
 
-        crypto=  Criptomonedas.objects.get(id=obj.criptomoneda.id)
+        crypto=  Cryptocurrency.objects.get(id=obj.criptomoneda.id)
 
         if crypto.recomendacion=='BUY' or crypto.recomendacion=='STRONG_BUY':
 
@@ -158,9 +165,9 @@ class PortofolioAdmin(admin.ModelAdmin):
 
     def _ganancia_usd(self, obj):
 
-        crypto=  Criptomonedas.objects.get(id=obj.criptomoneda.id)
+        crypto=  Cryptocurrency.objects.get(id=obj.criptomoneda.id)
 
-        balance_usd=obj.cantidad*crypto.precio
+        balance_usd=obj.cantidad*crypto.price
 
         ganancia_usd=balance_usd-obj.inversion_usd
 
@@ -172,24 +179,24 @@ class PortofolioAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(Inversion)
-class InversionsAdmin(admin.ModelAdmin):
-    list_display = ('id','criptomoneda','cuenta','cantidad_comprada','comprada_usd','_ganancia','transaccion','fecha')
-    list_filter = ('cuenta','criptomoneda','transaccion')
+@admin.register(Transaction)
+class TransactionsAdmin(admin.ModelAdmin):
+    list_display = ('id','cryptocurrency','account','quantity','holding','profit_loss','type_transaction','date')
+    list_filter = ('account','cryptocurrency','type_transaction')
    
     actions = ['actualizar']
 
     def save_model(self, request, obj, form, change):
 
-        super(InversionsAdmin, self).save_model(request, obj, form, change)
+        super(TransactionsAdmin, self).save_model(request, obj, form, change)
 
-        inv=Inversion.objects.get(id=obj.id)
-        inv.comprada_usd=round(obj.cantidad_comprada*obj.precio_usd,3)
+        inv=Transaction.objects.get(id=obj.id)
+        inv.holding=round(obj.quantity*obj.price_per_coin,3)
         inv.save()
 
-        _inversion=Inversion.objects.filter(criptomoneda_id=obj.criptomoneda.id,eliminado=False).order_by('id')
+        _inversion=Transaction.objects.filter(cryptocurrency_id=obj.cryptocurrency.id,status=False).order_by('id')
 
-        crypto=  Criptomonedas.objects.get(id=obj.criptomoneda.id)
+        crypto=  Cryptocurrency.objects.get(id=obj.cryptocurrency.id)
 
         _in=0
 
@@ -207,41 +214,41 @@ class InversionsAdmin(admin.ModelAdmin):
             _in=_in+1
             elem_gan.insert(1,_in)
 
-            print(i.transaccion)
+            print(i.type_transaction)
 
-            if i.transaccion=='C':
+            if i.type_transaction=='C':
                 signo=1
             else:
                 signo=-1
 
 
             if signo==1:
-                cantidad_comprada=cantidad_comprada+i.cantidad_comprada*signo
-                comprada_usd=comprada_usd+i.comprada_usd
+                cantidad_comprada=cantidad_comprada+i.quantity*signo
+                comprada_usd=comprada_usd+i.holding
             else:
-                cantidad_vendida=cantidad_vendida+i.cantidad_comprada*signo
-                vendida_usd=vendida_usd+i.comprada_usd
+                cantidad_vendida=cantidad_vendida+i.quantity*signo
+                vendida_usd=vendida_usd+i.holding
 
         print(cantidad_comprada,cantidad_vendida)
 
         cantidad=round(cantidad_comprada+cantidad_vendida,3)
 
-        balance_usd=cantidad*crypto.precio
+        balance_usd=cantidad*crypto.price
 
         inversion_usd=comprada_usd-vendida_usd
 
         ganancia_usd=balance_usd-inversion_usd
 
-        Portofolio.objects.filter(criptomoneda_id=obj.criptomoneda.id).delete()
+        Portfolio.objects.filter(cryptocurrency_id=obj.cryptocurrency.id).delete()
 
-        Portofolio(criptomoneda_id=obj.criptomoneda.id,cantidad=cantidad,balance_usd=round(balance_usd,3),comprada_usd=round(comprada_usd,3),venta_usd=round(vendida_usd,3),inversion_usd=round(inversion_usd,3),ganancia_usd=round(ganancia_usd,3)).save()
+        Portfolio(cryptocurrency_id=obj.cryptocurrency.id,quantity=cantidad,balance_usd=round(balance_usd,3),buy_usd=round(comprada_usd,3),sell_usd=round(vendida_usd,3),investing_usd=round(inversion_usd,3),profit_loss=round(ganancia_usd,3)).save()
 
 
 
-    def _comprada_usd(self, obj):
-        return obj.comprada_usd
+    def holding(self, obj):
+        return obj.holding
 
-    def _ganancia(self, obj):
+    def profit_loss(self, obj):
 
         if obj.ganancia<0:
             return format_html('<span  style="color:red;">'+str(round(obj.ganancia,3))+'</span>')

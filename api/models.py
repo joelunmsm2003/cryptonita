@@ -52,13 +52,13 @@ class MyUser(AbstractBaseUser):
     USERNAME_FIELD = 'username'
 
     class Meta:
-        verbose_name_plural = 'Usuarios'
+        verbose_name_plural = 'Users'
 
 
 
 
     def __str__(self):
-        return self.email
+        return self.username
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
@@ -78,16 +78,16 @@ class MyUser(AbstractBaseUser):
 
 
 
-class Criptomonedas(models.Model):
-    precio = models.FloatField(blank=True, max_length=100, null=True)
-    simbolo =models.CharField(blank=True, max_length=100, null=True)
+class Cryptocurrency(models.Model):
+    price = models.FloatField(blank=True, max_length=100, null=True)
+    symbol =models.CharField(blank=True, max_length=100, null=True)
     icono=models.CharField(blank=True, max_length=100, null=True)
     sigla =models.CharField(blank=True, max_length=100, null=True)
-    nombre =models.CharField(blank=True, max_length=100, null=True)
-    tendencia = models.CharField(blank=True, max_length=100, null=True)
-    recomendacion = models.CharField(blank=True, max_length=100, null=True)
-    activo = models.CharField(blank=True, max_length=100, null=True)
-    fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
+    name =models.CharField(blank=True, max_length=100, null=True)
+    trend = models.CharField(blank=True, max_length=100, null=True)
+    recommendation = models.CharField(blank=True, max_length=100, null=True)
+    activ = models.CharField(blank=True, max_length=100, null=True)
+    date = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
     market_cap = models.FloatField(blank=True, max_length=100, null=True)
     fully_diluted_market_cap= models.CharField(blank=True, max_length=100, null=True)
@@ -98,47 +98,45 @@ class Criptomonedas(models.Model):
     total_supply= models.CharField(blank=True, max_length=100, null=True)
 
 
-
-
     class Meta:
-        verbose_name_plural = 'Criptomonedas'
+        verbose_name_plural = 'Cryptocurrency'
 
     def __str__(self):
-       return self.simbolo.upper()+' - '+str(self.precio)
+       return self.symbol.upper()+' - '+str(self.price)
 
 compra_venta = (
-        ('C', 'Compra'),
-        ('V', 'Venta')
+        ('C', 'Buy'),
+        ('V', 'Sell')
     )
 
-class Cuentas(models.Model):
-    nombre = models.CharField(blank=False, max_length=100)
-    address = models.CharField(blank=False, max_length=100)
-    fecha = models.DateTimeField(blank=True, null=True)
+class Account(models.Model):
+    name = models.CharField(blank=True, max_length=100)
+    address = models.CharField(blank=True, max_length=100)
+    date = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name_plural = 'Cuentas'
+        verbose_name_plural = 'Accounts'
 
     def __str__(self):
-       return str(self.nombre)
+       return str(self.name)
        
-class Inversion(models.Model):
-    cantidad_comprada = models.FloatField(blank=True, null=True, max_length=100)
-    cuenta = models.ForeignKey(Cuentas, blank=True, null=True, on_delete=models.CASCADE)
-    precio_usd = models.FloatField(blank=True, null=True, max_length=100)
-    comprada_usd = models.FloatField(blank=True, null=True, max_length=100)
-    fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
+class Transaction(models.Model):
+    quantity = models.FloatField(blank=True, null=True, max_length=100)
+    price_per_coin = models.FloatField(blank=True, null=True, max_length=100)
+    account = models.ForeignKey(Account, blank=True, null=True, on_delete=models.CASCADE)
+    holding = models.FloatField(blank=True, null=True, max_length=100)
+    date = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
-    criptomoneda = models.ForeignKey(Criptomonedas, blank=True, null=True, on_delete=models.CASCADE)
-    transaccion = models.CharField(blank=True,max_length=1, choices=compra_venta,null=True)
-    eliminado = models.BooleanField(default=False)
+    cryptocurrency = models.ForeignKey(Cryptocurrency, blank=True, null=True, on_delete=models.CASCADE)
+    type_transaction = models.CharField(blank=True,max_length=1, choices=compra_venta,null=True)
+    status = models.BooleanField(default=False)
     
     class Meta:
-        verbose_name_plural = 'Inversiones'
+        verbose_name_plural = 'Transactions'
 
     def __str__(self):
-       return str(self.criptomoneda)
+       return str(self.cryptocurrency)
 
 
 
@@ -146,23 +144,13 @@ class Inversion(models.Model):
     @property
     def ganancia(self):
 
-        '''
 
-        url='https://blockchain.info/tobtc?currency=USD&value=1000'
 
-        response=requests.get(url)
+        if self.cryptocurrency:
 
-        cantidad=float(response.text)
+            precio=(self.cryptocurrency.price-self.price_per_coin)/self.price_per_coin
 
-        self.criptomoneda.precio=1000/cantidad
-
-        '''
-
-        if self.criptomoneda:
-
-            precio=(self.criptomoneda.precio-self.precio_usd)/self.precio_usd
-
-            ganancia= precio*self.comprada_usd
+            ganancia= precio*self.holding
 
             return ganancia
 
@@ -191,7 +179,7 @@ class Inversion(models.Model):
 
 
 class Historial(models.Model):
-    criptomoneda = models.ForeignKey(Criptomonedas, blank=True, null=True, on_delete=models.CASCADE)
+    criptomoneda = models.ForeignKey(Cryptocurrency, blank=True, null=True, on_delete=models.CASCADE)
     open_price = models.FloatField(blank=True, max_length=100, null=True)
     close_price = models.FloatField(blank=True, max_length=100, null=True)
     high_price = models.FloatField(blank=True, max_length=100, null=True)
@@ -212,27 +200,28 @@ class Historial(models.Model):
 
 
 
-class Portofolio(models.Model):
-    criptomoneda = models.ForeignKey(Criptomonedas, blank=True, null=True, on_delete=models.CASCADE)
-    cantidad = models.FloatField(blank=True, max_length=100, null=True)
+class Portfolio(models.Model):
+    cryptocurrency = models.ForeignKey(Cryptocurrency, blank=True, null=True, on_delete=models.CASCADE)
+    name = models.FloatField(blank=True, max_length=100, null=True)
+    quantity = models.FloatField(blank=True, max_length=100, null=True)
     balance_usd = models.FloatField(blank=True, max_length=100, null=True)
-    comprada_usd = models.FloatField(blank=True, max_length=100, null=True)
-    venta_usd = models.FloatField(blank=True, max_length=100, null=True)
-    inversion_usd = models.FloatField(blank=True, max_length=100, null=True)
-    ganancia_usd = models.FloatField(blank=True, max_length=100, null=True)
+    buy_usd = models.FloatField(blank=True, max_length=100, null=True)
+    sell_usd = models.FloatField(blank=True, max_length=100, null=True)
+    investing_usd = models.FloatField(blank=True, max_length=100, null=True)
+    profit_loss = models.FloatField(blank=True, max_length=100, null=True)
     cambio_hora = models.FloatField(blank=True, max_length=100, null=True)
     cambio_4hora = models.FloatField(blank=True, max_length=100, null=True)
     cambio_dia = models.FloatField(blank=True, max_length=100, null=True)
-    fecha = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
+    date = models.DateTimeField(blank=True, null=True,default=datetime.datetime.today())
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name_plural = 'Portafolio'
+        verbose_name_plural = 'Portfolio'
 
     @property
     def _ganancia_usd_indicador(self):
 
-        crypto=  Criptomonedas.objects.get(id=self.criptomoneda.id)
+        crypto=  Cryptocurrency.objects.get(id=self.criptomoneda.id)
 
         balance_usd=self.cantidad*crypto.precio
 

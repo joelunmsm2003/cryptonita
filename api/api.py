@@ -6,9 +6,9 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import AllowAny, IsAdminUser
 
 
-class CriptomonedasViewSet(viewsets.ModelViewSet):
-    queryset = Criptomonedas.objects.all()
-    serializer_class = CriptomonedasSerializer
+class CryptocurrencyViewSet(viewsets.ModelViewSet):
+    queryset = Cryptocurrency.objects.all()
+    serializer_class = CryptocurrencySerializer
     permission_classes = [AllowAny]
 
 class HistorialViewSet(viewsets.ModelViewSet):
@@ -32,8 +32,8 @@ class HistorialViewSet(viewsets.ModelViewSet):
         return Historial.objects.filter(criptomoneda__nombre__contains=name)
 
 
-class InversionViewSet(viewsets.ModelViewSet):
-    queryset = Inversion.objects.all()
-    serializer_class = InversionsSerializer
+class TransactionViewSet(viewsets.ModelViewSet):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionsSerializer
     permission_classes = [AllowAny]
 

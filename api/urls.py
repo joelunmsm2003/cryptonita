@@ -11,8 +11,8 @@ from rest_framework_simplejwt.views import (
 router = routers.DefaultRouter()
 
 
-router.register('api/v1/cryptos', CriptomonedasViewSet, 'cryptos')
-router.register('api/v1/inversiones', InversionViewSet, 'inversiones')
+router.register('api/v1/cryptos', CryptocurrencyViewSet, 'cryptos')
+router.register('api/v1/transactions', TransactionViewSet, 'transactions')
 router.register(r'api/v1/historial/(?P<username>.+)', HistorialViewSet, 'historial')
 
 admin.site.site_header = 'Cryptonita'

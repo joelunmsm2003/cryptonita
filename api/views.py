@@ -19,7 +19,7 @@ from tradingview_ta import TA_Handler, Interval, Exchange
 @csrf_exempt
 def seteaprecio(request):
 
-	monedas = Criptomonedas.objects.all()
+	monedas = Cryptocurrency.objects.all()
 
 
 
@@ -32,7 +32,7 @@ def seteaprecio(request):
 
 		try:
 
-			crypto=m.simbolo.lower()
+			crypto=m.symbol.lower()
 			tesla = TA_Handler(
 				symbol=crypto+"USDT",
 				screener="crypto",
@@ -99,20 +99,20 @@ def cryptos(request):
 
 	for s in suport:
 
-		if Criptomonedas.objects.filter(simbolo=s).count()==0:
+		if Cryptocurrency.objects.filter(symbol=s).count()==0:
 
-			Criptomonedas.objects.filter(simbolo=s).update(activo=False)
+			Cryptocurrency.objects.filter(symbol=s).update(activo=False)
 
 		else:
 
-			Criptomonedas.objects.filter(simbolo=s).update(activo=True)
+			Cryptocurrency.objects.filter(symbol=s).update(activo=True)
 
 
 	for l in listas:
 
-		if Criptomonedas.objects.filter(nombre=l['id']).count()==0:
+		if Cryptocurrency.objects.filter(nombre=l['id']).count()==0:
 			try:
-				Criptomonedas(nombre=l['id'],simbolo=l['symbol'],sigla=l['name']).save()
+				Cryptocurrency(nombre=l['id'],symbol=l['symbol'],sigla=l['name']).save()
 			except:
 				pass
 
@@ -232,19 +232,19 @@ def getCrypto(request):
 
 
 				
-				if Criptomonedas.objects.filter(sigla=slug).count()==0:
+				if Cryptocurrency.objects.filter(sigla=slug).count()==0:
 
-					Criptomonedas(icono=icono,max_supply=max_supply.replace(',',''),total_supply=total_supply.replace(',',''),sigla=slug,nombre=nombre,simbolo=simbolo,precio=precio,market_cap=market_cap.replace('$','').replace(',',''),volume_24h=volume_24h.replace('$','').replace(',',''),volume_24h_market_cap=volume_24h_market_cap,circulating_supply=circulating_supply.replace(',','')).save()
+					Cryptocurrency(icono=icono,max_supply=max_supply.replace(',',''),total_supply=total_supply.replace(',',''),sigla=slug,name=nombre,symbol=simbolo,price=precio,market_cap=market_cap.replace('$','').replace(',',''),volume_24h=volume_24h.replace('$','').replace(',',''),volume_24h_market_cap=volume_24h_market_cap,circulating_supply=circulating_supply.replace(',','')).save()
 
 
 				else:
 
-					c=Criptomonedas.objects.get(sigla=slug)
-					c.precio=precio
+					c=Cryptocurrency.objects.get(sigla=slug)
+					c.price=precio
 					c.icono=icono
 					c.sigla=slug
 					c.nombre=nombre
-					c.simbolo=simbolo
+					c.symbol=simbolo
 					c.market_cap=market_cap.replace('$','').replace(',','')
 					c.volume_24h=volume_24h.replace('$','').replace(',','')
 					c.circulating_supply=circulating_supply.replace(',','')
@@ -349,13 +349,13 @@ def monedas(request,name,precio,plataforma):
 			ultimo_4hora=0
 			ultimodia=0
 
-		_inversion=Inversion.objects.filter(criptomoneda__nombre=name,eliminado=False).order_by('id')
+		_inversion=Transaction.objects.filter(criptomoneda__nombre=name,eliminado=False).order_by('id')
 
 		print('name',name)
 
-		crypto=Criptomonedas.objects.get(nombre__contains=name)
+		crypto=Cryptocurrency.objects.get(nombre__contains=name)
 
-		allcryptos=Criptomonedas.objects.filter(activo=True).order_by('-precio')
+		allcryptos=Cryptocurrency.objects.filter(activo=True).order_by('-price')
 
 		data=[]
 		data_inv=[]
@@ -417,12 +417,12 @@ def monedas(request,name,precio,plataforma):
 
 		if precio!='NaN':
 
-			crypto.precio=float(precio)
+			crypto.price=float(precio)
 
-		print(crypto.precio)
+		print(crypto.price)
 
 		
-		return render(request, 'monedas.html', {'l_list_medias':json.dumps(list_medias),'medias':json.dumps(_medias),'historial':json.dumps(serializer_historial.data),'vendida_usd':round(vendida_usd,3),'ganancia_retorno':round(cantidad_comprada*crypto.precio+round(vendida_usd-comprada_usd,2),3),'comprada_usd':round(comprada_usd,3),'ultimo_hora':round(ultimo_hora,3),'ultimodia':round(ultimodia,3),'ultimo_4hora':round(ultimo_4hora,3),'balance':round(cantidad_comprada*crypto.precio,2),'title': name,'data':data,'crypto':crypto,'allcryptos':allcryptos,'inversion':data_inv,'cantidad_comprada':round(cantidad_comprada,5),'ganancia':data_gan,'inversion_usd':round(vendida_usd-comprada_usd,2)*-1})
+		return render(request, 'monedas.html', {'l_list_medias':json.dumps(list_medias),'medias':json.dumps(_medias),'historial':json.dumps(serializer_historial.data),'vendida_usd':round(vendida_usd,3),'ganancia_retorno':round(cantidad_comprada*crypto.price+round(vendida_usd-comprada_usd,2),3),'comprada_usd':round(comprada_usd,3),'ultimo_hora':round(ultimo_hora,3),'ultimodia':round(ultimodia,3),'ultimo_4hora':round(ultimo_4hora,3),'balance':round(cantidad_comprada*crypto.price,2),'title': name,'data':data,'crypto':crypto,'allcryptos':allcryptos,'inversion':data_inv,'cantidad_comprada':round(cantidad_comprada,5),'ganancia':data_gan,'inversion_usd':round(vendida_usd-comprada_usd,2)*-1})
 
 
 @csrf_exempt
@@ -435,9 +435,9 @@ def monitor(request):
 
 		_historial=HistorialUser.objects.all().order_by('-id')[:5000]
 
-		_criptos=Criptomonedas.objects.filter(activo=True).order_by('-precio')
+		_criptos=Cryptocurrency.objects.filter(activo=True).order_by('-price')
 
-		serializer_cryptos = CriptomonedasSerializer(_criptos, many=True)
+		serializer_cryptos = CryptocurrencySerializer(_criptos, many=True)
 
 
 		serializer_historial = HistorialUserSerializer(_historial, many=True)
@@ -450,7 +450,7 @@ def analisis(request):
 
 	if request.method == 'GET':
 
-		cryptos=Criptomonedas.objects.filter(activo=True)
+		cryptos=Cryptocurrency.objects.filter(activo=True)
 
 		print(cryptos)
 
@@ -465,7 +465,7 @@ def analisis(request):
 			porcentaje_vendida=0
 			balance_vendida=0
 			balance_comprada=0
-			inv=Inversion.objects.filter(criptomoneda__nombre__contains=c.nombre)
+			inv=Transaction.objects.filter(criptomoneda__nombre__contains=c.nombre)
 			
 			for i in inv:
 
@@ -487,7 +487,7 @@ def analisis(request):
 
 				
 			
-			detalle={'balance':(balance_comprada-balance_vendida)*c.precio,'moneda':c.nombre,'ganancia':ganancia,'comprada_usd':-vendida_usd+comprada_usd,'porcentaje':porcentaje-porcentaje_vendida}
+			detalle={'balance':(balance_comprada-balance_vendida)*c.price,'moneda':c.nombre,'ganancia':ganancia,'comprada_usd':-vendida_usd+comprada_usd,'porcentaje':porcentaje-porcentaje_vendida}
 			data.insert(1,detalle)
 			print(data)
 			
@@ -556,13 +556,13 @@ def alerta(request,name):
 				print('cruce',_medias[2][d]['fecha'],_medias[2][d]['valor']>cruce[0]['valor'],(_medias[2][d]['valor']-cruce[0]['valor'])*100/_medias[2][d]['valor'])
 		
 		
-		tendencia=Criptomonedas.objects.filter(nombre__contains=name).order_by('-id')[:1]
+		tendencia=Cryptocurrency.objects.filter(nombre__contains=name).order_by('-id')[:1]
 		print(tendencia[0].tendencia)
 
 		status_actual=_medias[2][d]['valor']>cruce[0]['valor']
 		status_anterior=tendencia[0].tendencia
 
-		cri=Criptomonedas.objects.get(nombre__contains=name)
+		cri=Cryptocurrency.objects.get(nombre__contains=name)
 		cri.tendencia=_medias[2][d]['valor']>cruce[0]['valor']
 		cri.save()
 
