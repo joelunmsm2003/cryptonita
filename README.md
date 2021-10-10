@@ -1,6 +1,7 @@
-# Cryptonyta 
+# Cryptonita 
 
-An application to manage and track investments in cryptocurrencies
+An application to manage and track your cryptocurrency investments locally on your computer with the Django framework without using any centralized application to track your investments.
+
 
 ![alt text for screen readers](https://i.postimg.cc/vTPp2HvQ/Screenshot-2021-10-10-T113022-132.png "Cryptocurrencies List ").
 
