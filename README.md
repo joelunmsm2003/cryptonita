@@ -14,39 +14,29 @@ Docker
 
 ```
 docker-compose build
-
-
 ```
 
 ```
-
 docker-compose up
-
 ```
 ## Commands
 
 Run database migrations
 ```
 docker-compose run web python manage.py makemigrations
-
-
 ```
 
 ```
-
 docker-compose run web python manage.py migrate
-
 ```
 Create admin user
 ```
 docker-compose run web python manage.py createsuperuser --username admin
-
 ```
 
 Load cryptos 
 ```
 http://localhost:5500/getCrypto
-
 ```
 
 
