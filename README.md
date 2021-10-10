@@ -14,6 +14,12 @@ Docker
 
 ```
 docker-compose build
+
+
+```
+
+```
+
 docker-compose up
 
 ```
@@ -22,6 +28,12 @@ docker-compose up
 Run database migrations
 ```
 docker-compose run web python manage.py makemigrations
+
+
+```
+
+```
+
 docker-compose run web python manage.py migrate
 
 ```
@@ -38,6 +50,6 @@ http://localhost:5500/getCrypto
 ```
 
 
-Once the server is running, visit http://127.0.0.1:5500/ in your web browser. Now, you should see something 
+Once the server is running, visit http://127.0.0.1:5500/admin in your web browser. Now, you should see something 
 
 
