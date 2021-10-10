@@ -17,3 +17,4 @@ pycoingecko
 bs4
 pandas
 tradingview_ta
+psycopg2==2.8.6

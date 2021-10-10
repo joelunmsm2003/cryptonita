@@ -3,20 +3,11 @@ volumes:
  dbdata:
 
 services:
-  mysql:
-    image: mysql:5.7
-    container_name: crypto_database_container
-    volumes:
-    - dbdata:/var/lib/mysql
+  db:
+    image: postgres
     restart: always
     environment:
-    - MYSQL_ROOT_PASSWORD=secret
-    - MYSQL_DATABASE=crypto
-    - MYSQL_USER=crypto
-    - MYSQL_PASSWORD=secret
-    ports:
-    - "3370:3306"
-    #command: ["/etc/init.d/mysql status"]
+      POSTGRES_PASSWORD: postgres
   web:
     build: .
     container_name: crypto_django_container
@@ -26,4 +17,4 @@ services:
     ports:
       - "5500:8000"
     depends_on:
-      - mysql
+      - db

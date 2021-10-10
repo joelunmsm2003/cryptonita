@@ -82,47 +82,7 @@ def seteaprecio(request):
 
 
 		
-		ganancia=Inversion.objects.filter(criptomoneda_id=m.id)
-
-		ganancia_total=[]
-
-		'''
-
-		for g in ganancia:
-
-			if g.transaccion=='C':
-				signo=1
-			else:
-				signo=-1
-
-			ganancia_total.insert(1,g.ganancia*signo)
-
-		ganancia_total=sum(ganancia_total)
-
-		'''
-
-		#HistorialUser(fecha=datetime.datetime.now(),price=precio,criptomoneda_id=m.id,ganancia=ganancia_total).save()
-
-	url='https://cuantoestaeldolar.pe/'
-
-	res=requests.get(url)
-
 	
-	data=res.text
-
-	soup = BeautifulSoup(data)
-
-	c='casa_h_compra'
-
-	for link in soup.find_all('div', class_=c):
-
-		precio_sol=link.text.replace('Compra','')
-
-
-	precio_sol=1/float(precio_sol)
-
-	Historial(fecha=datetime.datetime.now(),price=precio_sol,criptomoneda_id=5950).save()
-
 
 	return JsonResponse(precio, safe=False)
 
