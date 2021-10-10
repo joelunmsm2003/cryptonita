@@ -2,6 +2,8 @@
 
 An application to manage and track investments in cryptocurrencies
 
+![alt text for screen readers](https://i.postimg.cc/vTPp2HvQ/Screenshot-2021-10-10-T113022-132.png "Cryptocurrencies List ").
+
 
 ## Requirements
 
@@ -28,9 +30,9 @@ docker-compose run web python manage.py createsuperuser --username admin
 
 ```
 
-Load cryptos
+Load cryptos 
 ```
-curl http://localhost:5500/getPrecio
+http://localhost:5500/getCrypto
 
 ```
 
