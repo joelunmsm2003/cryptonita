@@ -6,6 +6,11 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import AllowAny, IsAdminUser
 
 
+class MyUserViewSet(viewsets.ModelViewSet):
+    queryset = MyUser.objects.all()
+    serializer_class = MyUserSerializer
+    permission_classes = [AllowAny]
+
 class CryptocurrencyViewSet(viewsets.ModelViewSet):
     queryset = Cryptocurrency.objects.all()
     serializer_class = CryptocurrencySerializer
@@ -37,3 +42,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     serializer_class = TransactionsSerializer
     permission_classes = [AllowAny]
 
+class AccountsViewSet(viewsets.ModelViewSet):
+    queryset = Account.objects.all()
+    serializer_class = AccountsSerializer
+    permission_classes = [AllowAny]

@@ -300,7 +300,8 @@ def monedas(request,name,precio,plataforma):
 
 
 
-		_historial=Historial.objects.filter(criptomoneda__nombre=name).order_by('-id')[:6000]
+		_historial=Historial.objects.filter(criptomoneda__name=name).order_by('-id')[:6000]
+
 
 
 
@@ -349,11 +350,11 @@ def monedas(request,name,precio,plataforma):
 			ultimo_4hora=0
 			ultimodia=0
 
-		_inversion=Transaction.objects.filter(criptomoneda__nombre=name,eliminado=False).order_by('id')
+		_inversion=Transaction.objects.filter(cryptocurrency__name=name,status=False).order_by('id')
 
 		print('name',name)
 
-		crypto=Cryptocurrency.objects.get(nombre__contains=name)
+		crypto=Cryptocurrency.objects.get(name=name)
 
 		allcryptos=Cryptocurrency.objects.filter(activo=True).order_by('-price')
 

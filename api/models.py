@@ -37,7 +37,7 @@ class MyUserManager(BaseUserManager):
 class MyUser(AbstractBaseUser):
     email = models.EmailField(
         verbose_name='email address',
-        max_length=255,
+        blank=False, max_length=255,null=True
         
     )
     username = models.CharField(blank=False, max_length=100,null=True,unique=True,)
@@ -46,6 +46,11 @@ class MyUser(AbstractBaseUser):
     confirma_email = models.BooleanField(default=False)
     latitud = models.CharField(blank=False, max_length=100,null=True)
     longitud = models.CharField(blank=False, max_length=100,null=True)
+    avatar = models.CharField(blank=False, max_length=1000,null=True)
+    name = models.CharField(blank=False, max_length=1000,null=True)
+    birthday = models.CharField(blank=False, max_length=1000,null=True)
+    address = models.CharField(blank=False, max_length=1000,null=True)
+    notes = models.CharField(blank=False, max_length=1000,null=True)
 
     objects = MyUserManager()
 
@@ -76,6 +81,53 @@ class MyUser(AbstractBaseUser):
         # Simplest possible answer: All admins are staff
         return self.is_admin
 
+
+class Job(models.Model):
+    user = models.OneToOneField(MyUser, related_name='job', on_delete=models.CASCADE,blank=False,null=True)
+    title = models.CharField(blank=False, max_length=1000,null=True)
+    company = models.CharField(blank=False, max_length=1000,null=True)
+
+    class Meta:
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+
+
+class Tag(models.Model):
+    user = models.ForeignKey(MyUser, related_name='tags', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    label = models.CharField(blank=False, max_length=1000,null=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+class Email(models.Model):
+    user = models.ForeignKey(MyUser, related_name='emails', on_delete=models.CASCADE, blank=False,null=True)
+    email = models.CharField(blank=False, max_length=255,null=True)
+    label = models.CharField(blank=False, max_length=1000,null=True)
+
+    class Meta:
+        ordering = ['email']
+
+    def __str__(self):
+        return self.email
+
+class PhoneNumbers(models.Model):
+    user = models.ForeignKey(MyUser, related_name='phoneNumbers', on_delete=models.CASCADE, blank=False,null=True)
+    country = models.CharField(blank=False, max_length=1000,null=True)
+    number = models.CharField(blank=False, max_length=1000,null=True)
+    label = models.CharField(blank=False, max_length=1000,null=True)
+
+    class Meta:
+        ordering = ['number']
+
+    def __str__(self):
+        return self.number
 
 
 class Cryptocurrency(models.Model):

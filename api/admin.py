@@ -17,11 +17,11 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('username', 'is_admin','confirma_email')
+    list_display = ('username', 'is_admin','avatar','confirma_email')
     list_filter = ('is_admin',)
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Personal informacion', {'fields': ('username',)}),
+        (None, {'fields': ('email', 'password','address')}),
+        ('Personal informacion', {'fields': ('username','avatar','name')}),
         ('Permissions', {'fields': ('is_admin',)}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
@@ -58,6 +58,23 @@ class CryptocurrencyAdmin(admin.ModelAdmin):
         else:
             return obj.nombre
 
+
+@admin.register(Email)
+class EmailAdmin(admin.ModelAdmin):
+    list_display = ('id',)
+
+@admin.register(PhoneNumbers)
+class PhoneNumbersAdmin(admin.ModelAdmin):
+    list_display = ('id',)
+
+
+@admin.register(Job)
+class JobAdmin(admin.ModelAdmin):
+    list_display = ('id','user',)
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('id','name',)
 
 @admin.register(Historial)
 class HistorialAdmin(admin.ModelAdmin):
