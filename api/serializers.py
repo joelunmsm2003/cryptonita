@@ -15,6 +15,12 @@ class HistorialSerializer(serializers.ModelSerializer):
 		model = Historial 
 		fields = "__all__"
 
+@permission_classes([])
+class GenericSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Generic 
+		fields = "__all__"
+
 
 class TransactionsSerializer(serializers.ModelSerializer):
 	class Meta:

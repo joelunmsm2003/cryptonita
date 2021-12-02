@@ -93,6 +93,62 @@ class Job(models.Model):
     def __str__(self):
         return self.title
 
+tables = (
+        ('Cryptocurrency', 'Cryptocurrency'),
+        ('Tag', 'Tag')
+    )
+
+
+columns = (
+        ('id','id'),
+        ('price','price'),
+        ('symbol','symbol'),
+        ('icono','icono'),
+        ('sigla','sigla'),
+        ('name','name'),
+        ('trend','trend'),
+        ('recommendation','recommendation'),
+        ('activ','activ'),
+        ('date','date'),
+        ('user','user'),
+        ('market_cap','market_cap'),
+        ('fully_diluted_market_cap','fully_diluted_market_cap'),
+        ('volume_24h','volume_24h'),
+        ('volume_24h_market_cap','volume_24h_market_cap'),
+        ('circulating_supply','circulating_supply'),
+        ('max_supply','max_supply'),
+        ('total_supply','total_supply')
+    )
+
+datatypes=(
+
+    ('date','date'),
+    ('datetime-local','datetime-local'),
+    ('email','email'),
+    ('month','month'),
+    ('number','number'),
+    ('password','password'),
+    ('search','search'),
+    ('tel','tel'),
+    ('text','text'),
+    ('time','time'),
+    ('url','url'),
+    ('week','week')
+
+    )
+
+class Generic(models.Model):
+    table = models.CharField(blank=False, max_length=1000,null=True,choices=tables)
+    column = models.CharField(blank=False, max_length=1000,null=True,choices=columns)
+    icon = models.CharField(blank=True, max_length=1000,null=True)
+    label = models.CharField(blank=True, max_length=1000,null=True)
+    editable =  models.BooleanField(default=False)
+    datatype=  models.CharField(blank=True, max_length=1000,null=True,choices=datatypes)
+    visible=   models.BooleanField(default=False)
+    
+
+    def __str__(self):
+        return self.table
 
 
 class Tag(models.Model):

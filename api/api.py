@@ -16,6 +16,19 @@ class CryptocurrencyViewSet(viewsets.ModelViewSet):
     serializer_class = CryptocurrencySerializer
     permission_classes = [AllowAny]
 
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, args, kwargs)
+
+        table=Generic.objects.filter(table='Cryptocurrency')
+        file_fields=[]
+        for t in table:
+            file_fields.append({'field':t.column,'type':t.datatype,'visible':t.visible,'editable':t.editable,'icon':t.icon,'label':t.label,'editable':t.editable})
+
+
+        response.data['meta'] = file_fields
+
+        return response
+
 class HistorialViewSet(viewsets.ModelViewSet):
     queryset = Historial.objects.all()
     serializer_class = HistorialSerializer
@@ -45,4 +58,9 @@ class TransactionViewSet(viewsets.ModelViewSet):
 class AccountsViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountsSerializer
+    permission_classes = [AllowAny]
+
+class GenericViewSet(viewsets.ModelViewSet):
+    queryset = Generic.objects.all()
+    serializer_class = GenericSerializer
     permission_classes = [AllowAny]

@@ -16,7 +16,7 @@ router.register('api/v1/transactions', TransactionViewSet, 'transactions')
 router.register('api/v1/accounts', AccountsViewSet, 'accounts')
 router.register(r'api/v1/historial/(?P<username>.+)', HistorialViewSet, 'historial')
 router.register(r'api/v1/users', MyUserViewSet, 'user')
-
+router.register(r'api/v1/generic', GenericViewSet, 'generic')
 
 admin.site.site_header = 'Cryptonita'
 

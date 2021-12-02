@@ -11,6 +11,7 @@ services:
   web:
     build: .
     container_name: crypto_django_container
+    restart: always
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code

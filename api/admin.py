@@ -59,6 +59,11 @@ class CryptocurrencyAdmin(admin.ModelAdmin):
             return obj.nombre
 
 
+@admin.register(Generic)
+class GenericAdmin(admin.ModelAdmin):
+    list_display = ('id','table','column','label')
+
+
 @admin.register(Email)
 class EmailAdmin(admin.ModelAdmin):
     list_display = ('id',)
