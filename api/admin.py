@@ -61,7 +61,9 @@ class CryptocurrencyAdmin(admin.ModelAdmin):
 
 @admin.register(Generic)
 class GenericAdmin(admin.ModelAdmin):
-    list_display = ('id','table','column','label')
+    list_display = ('id','table','column','label','visible','editable')
+    list_editable = ('visible','editable')
+
 
 
 @admin.register(Email)
